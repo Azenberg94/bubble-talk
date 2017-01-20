@@ -1,5 +1,6 @@
 package com.groupe6al2.bubbletalk.Activity;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -28,10 +29,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private GoogleApiClient mGoogleApiClient;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        buttonDeco = (Button)findViewById(R.id.buttonDeco);
 
+        Button buttonParam = (Button) findViewById(R.id.buttonParam);
+        buttonParam.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                Intent intent = new Intent(MainActivity.this, ParamActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        buttonDeco = (Button)findViewById(R.id.buttonDeco);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -41,12 +51,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-         auth = FirebaseAuth.getInstance();
+        auth = FirebaseAuth.getInstance();
 
-       users= auth.getCurrentUser();
+        users= auth.getCurrentUser();
 
 
-        DatabaseReference myRef = database.getReference("Users").child(users.getUid()).child("Nom");
+
+        DatabaseReference myRef = database.getReference("User").child(users.getUid()).child("Nom");
 
         myRef.setValue(users.getDisplayName());
 

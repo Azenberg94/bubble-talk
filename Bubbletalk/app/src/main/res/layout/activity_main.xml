@@ -10,21 +10,40 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.groupe6al2.bubbletalk.Activity.MainActivity">
 
-    <Button
-        android:text="Deco"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/buttonDeco"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/buttonDeco"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"></LinearLayout>
+        android:layout_alignParentStart="true">
+
+        <Button
+            android:text="Lancer l'appli"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/buttonGo" />
+
+        <Button
+            android:text="Créer une bulle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/buttonCreateBubble" />
+
+        <Button
+            android:text="Parametres"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/buttonParam" />
+
+        <Button
+            android:text="Deco"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/buttonDeco"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+    </LinearLayout>
 
 </RelativeLayout>

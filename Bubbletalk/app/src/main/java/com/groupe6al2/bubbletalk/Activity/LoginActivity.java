@@ -2,11 +2,9 @@ package com.groupe6al2.bubbletalk.Activity;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -26,13 +24,13 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.groupe6al2.bubbletalk.Class.BubbleTalkSQLite;
+import com.groupe6al2.bubbletalk.Class.User;
 import com.groupe6al2.bubbletalk.R;
 
 public class LoginActivity  extends BaseActivity implements
         GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
-
-
 
     private static final String TAG = "GoogleActivity";
     private static final int RC_SIGN_IN = 9001;
@@ -46,20 +44,15 @@ public class LoginActivity  extends BaseActivity implements
     // [END declare_auth_listener]
 
     private GoogleApiClient mGoogleApiClient;
-    private TextView mStatusTextView;
-    private TextView mDetailTextView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        // Views
-        mStatusTextView = (TextView) findViewById(R.id.status);
-        mDetailTextView = (TextView) findViewById(R.id.detail);
 
         // Button listeners
         findViewById(R.id.sign_in_button).setOnClickListener(this);
-
 
         // [START config_signin]
         // Configure Google Sign In
@@ -215,13 +208,43 @@ public class LoginActivity  extends BaseActivity implements
         // connection ok aller dans le mainActivity
 
             // user.getEmail()
+            User users = new User();
+
             Toast.makeText(this, "Bienvenue " + user.getEmail(), Toast.LENGTH_SHORT).show();
             FirebaseDatabase database = FirebaseDatabase.getInstance();
 
+            BubbleTalkSQLite bubbleTalkSQLite= new BubbleTalkSQLite(this);
 
-            DatabaseReference myRef = database.getReference("Users").child(user.getUid()).child("Email");
+            users.setId(user.getUid());
+            users.setEmail(user.getEmail());
+            users.setName(user.getDisplayName());
+            users.setPseudo("");
+            users.setAvatar("");
 
+
+            bubbleTalkSQLite.addUser(users);
+
+            System.out.println("Mon UID : " + user.getUid());
+
+            User recupUser = bubbleTalkSQLite.getUser(user.getUid());
+
+
+
+            Toast.makeText(this, "Bienvenue " + recupUser.getEmail(), Toast.LENGTH_SHORT).show();
+
+            /*
+            User localUser = usersDAO.selectionner(user.getUid());
+
+
+            if(localUser == null){
+                Log.i("test insert","test insert");
+                usersDAO.ajouter(user.getUid(),user.getEmail(),user.getDisplayName());
+            }
+*/
+
+            DatabaseReference myRef = database.getReference("User").child(user.getUid()).child("Email");
             myRef.setValue(user.getEmail());
+
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             //  intent.putExtra(EXTRA_MESSAGE, message);
 
