@@ -214,6 +214,9 @@ public class LoginActivity  extends BaseActivity implements
             FirebaseDatabase database = FirebaseDatabase.getInstance();
 
             BubbleTalkSQLite bubbleTalkSQLite= new BubbleTalkSQLite(this);
+            if(bubbleTalkSQLite.getCount() != 0){
+                bubbleTalkSQLite.deleteTable();
+            }
 
             users.setId(user.getUid());
             users.setEmail(user.getEmail());

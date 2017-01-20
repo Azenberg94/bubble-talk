@@ -44,7 +44,7 @@ public class User {
         return usePseudo;
     }
 
-    public void setUsePseudo() {
+    public void setUsePseudo(Boolean usePseudo) {
         this.usePseudo = usePseudo;
     }
 

@@ -34,7 +34,7 @@ public class ParamActivity extends AppCompatActivity {
         User currentUser =  bubbleTalkSQLite.getUser(users.getUid());
 
         System.out.println("Mon UID : " + users.getUid());
-
+        System.out.println("Mon UID2 : " + currentUser.getId());
         textViewName= (TextView) findViewById(R.id.textViewName);
         textViewName.setText(currentUser.getName());
 

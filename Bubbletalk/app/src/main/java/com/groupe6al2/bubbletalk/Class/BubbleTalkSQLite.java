@@ -67,9 +67,12 @@ public class BubbleTalkSQLite extends SQLiteOpenHelper {
         ArrayList<User> userList = new ArrayList<User>();
         if (cursor .moveToFirst()) {
             while (cursor.isAfterLast() == false) {
+         //       myUser.setId(cursor.getString(cursor.getColumnIndex(COL_NAME)));
                 myUser.setName(cursor.getString(cursor.getColumnIndex(COL_NAME)));
                 myUser.setPseudo(cursor.getString(cursor.getColumnIndex(COL_PSEUDO)));
-                myUser.setPseudo(cursor.getString(cursor.getColumnIndex(COL_USE_PSEUDO)));
+                boolean value = cursor.getInt(cursor.getColumnIndex(COL_USE_PSEUDO)) > 0;
+
+                myUser.setUsePseudo(value);
                 myUser.setEmail(cursor.getString(cursor.getColumnIndex(COL_EMAIL)));
                 myUser.setAvatar(cursor.getString(cursor.getColumnIndex(COL_AVATAR)));
 
@@ -80,10 +83,18 @@ public class BubbleTalkSQLite extends SQLiteOpenHelper {
         return userList.get(0);
     }
 
-    public void deleteTable(){
+   public void deleteTable(){
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("DELETE  " + TABLE_USERS);
-        onCreate(db);
+        db.execSQL("DELETE FROM " + TABLE_USERS);
+    }
+
+    public int getCount() {
+        String countQuery = "SELECT  * FROM " + TABLE_USERS;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, null);
+        int cnt = cursor.getCount();
+        cursor.close();
+        return cnt;
     }
 
 }
