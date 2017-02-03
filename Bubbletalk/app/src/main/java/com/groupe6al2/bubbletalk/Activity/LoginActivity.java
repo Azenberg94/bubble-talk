@@ -22,8 +22,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.groupe6al2.bubbletalk.Class.BubbleTalkSQLite;
 import com.groupe6al2.bubbletalk.Class.User;
 import com.groupe6al2.bubbletalk.R;
@@ -31,6 +34,8 @@ import com.groupe6al2.bubbletalk.R;
 public class LoginActivity  extends BaseActivity implements
         GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
+
+
 
     private static final String TAG = "GoogleActivity";
     private static final int RC_SIGN_IN = 9001;
@@ -43,6 +48,12 @@ public class LoginActivity  extends BaseActivity implements
     private FirebaseAuth.AuthStateListener mAuthListener;
     // [END declare_auth_listener]
 
+    DatabaseReference myRef;
+    String email;
+    String name;
+    String uid;
+
+
     private GoogleApiClient mGoogleApiClient;
 
 
@@ -50,6 +61,8 @@ public class LoginActivity  extends BaseActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+
 
         // Button listeners
         findViewById(R.id.sign_in_button).setOnClickListener(this);
@@ -199,54 +212,18 @@ public class LoginActivity  extends BaseActivity implements
     private void updateUI(FirebaseUser user) {
         hideProgressDialog();
         if (user != null) {
-        /*    mStatusTextView.setText(getString(R.string.google_status_fmt, user.getEmail()));
-            mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
-
-            findViewById(R.id.sign_in_button).setVisibility(View.GONE);
-            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);*/
 
         // connection ok aller dans le mainActivity
 
-            // user.getEmail()
-            User users = new User();
 
-            Toast.makeText(this, "Bienvenue " + user.getEmail(), Toast.LENGTH_SHORT).show();
+
+
             FirebaseDatabase database = FirebaseDatabase.getInstance();
 
-            BubbleTalkSQLite bubbleTalkSQLite= new BubbleTalkSQLite(this);
-            if(bubbleTalkSQLite.getCount() != 0){
-                bubbleTalkSQLite.deleteTable();
-            }
-
-            users.setId(user.getUid());
-            users.setEmail(user.getEmail());
-            users.setName(user.getDisplayName());
-            users.setPseudo("");
-            users.setAvatar("");
+            Toast.makeText(this, "Bienvenue " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
+            email =  user.getEmail();
 
 
-            bubbleTalkSQLite.addUser(users);
-
-            System.out.println("Mon UID : " + user.getUid());
-
-            User recupUser = bubbleTalkSQLite.getUser(user.getUid());
-
-
-
-            Toast.makeText(this, "Bienvenue " + recupUser.getEmail(), Toast.LENGTH_SHORT).show();
-
-            /*
-            User localUser = usersDAO.selectionner(user.getUid());
-
-
-            if(localUser == null){
-                Log.i("test insert","test insert");
-                usersDAO.ajouter(user.getUid(),user.getEmail(),user.getDisplayName());
-            }
-*/
-
-            DatabaseReference myRef = database.getReference("User").child(user.getUid()).child("Email");
-            myRef.setValue(user.getEmail());
 
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             //  intent.putExtra(EXTRA_MESSAGE, message);

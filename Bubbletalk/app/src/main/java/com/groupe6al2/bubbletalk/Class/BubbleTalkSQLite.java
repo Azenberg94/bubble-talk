@@ -48,16 +48,17 @@ public class BubbleTalkSQLite extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public  void addUser(User user){
+    public void addUser(User user){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues value = new ContentValues();
         value.put(COL_ID_USER, user.getId());
         value.put(COL_EMAIL, user.getEmail());
         value.put(COL_PSEUDO,"");
-        value.put(COL_USE_PSEUDO,true);
-        value.put(COL_NAME, "");
+        value.put(COL_USE_PSEUDO,false);
+        value.put(COL_NAME, user.getName());
         value.put(COL_AVATAR, "");
         db.insert(TABLE_USERS, null, value);
+
     }
 
     public User getUser(String id){
@@ -67,11 +68,10 @@ public class BubbleTalkSQLite extends SQLiteOpenHelper {
         ArrayList<User> userList = new ArrayList<User>();
         if (cursor .moveToFirst()) {
             while (cursor.isAfterLast() == false) {
-         //       myUser.setId(cursor.getString(cursor.getColumnIndex(COL_NAME)));
+                myUser.setId(cursor.getString(cursor.getColumnIndex(COL_ID_USER)));
                 myUser.setName(cursor.getString(cursor.getColumnIndex(COL_NAME)));
                 myUser.setPseudo(cursor.getString(cursor.getColumnIndex(COL_PSEUDO)));
                 boolean value = cursor.getInt(cursor.getColumnIndex(COL_USE_PSEUDO)) > 0;
-
                 myUser.setUsePseudo(value);
                 myUser.setEmail(cursor.getString(cursor.getColumnIndex(COL_EMAIL)));
                 myUser.setAvatar(cursor.getString(cursor.getColumnIndex(COL_AVATAR)));
@@ -81,6 +81,36 @@ public class BubbleTalkSQLite extends SQLiteOpenHelper {
             }
         }
         return userList.get(0);
+    }
+
+    public void updateUser(String id,String[] data){
+        SQLiteDatabase db = this.getWritableDatabase();
+        User myUser =  this.getUser(id);
+        System.out.println(myUser.toString());
+        if(!data[0].isEmpty()){
+            db.execSQL("UPDATE "+TABLE_USERS+" SET "+COL_PSEUDO+ "='"+data[0]+ "' WHERE "+COL_ID_USER+"='"+id+"'");
+        }
+        if(!data[1].isEmpty()){
+            db.execSQL("UPDATE "+TABLE_USERS+" SET "+COL_EMAIL+ "='"+data[1]+ "' WHERE "+COL_ID_USER+"='"+id+"'");
+        }
+        if(!data[2].isEmpty()){
+            db.execSQL("UPDATE "+TABLE_USERS+" SET "+COL_NAME+ "='"+data[2]+ "' WHERE "+COL_ID_USER+"='"+id+"'");
+        }
+        if(!data[3].isEmpty()){
+            db.execSQL("UPDATE "+TABLE_USERS+" SET "+COL_AVATAR+ "='"+data[3]+ "' WHERE "+COL_ID_USER+"='"+id+"'");
+        }
+        if(!data[4].isEmpty()){
+            if (data[4].equals("true")){
+                System.out.println("test true");
+                db.execSQL("UPDATE "+TABLE_USERS+" SET "+COL_USE_PSEUDO+ "= 1 WHERE "+COL_ID_USER+"='"+id+"'");
+            }else{
+                System.out.println("test false");
+                db.execSQL("UPDATE "+TABLE_USERS+" SET "+COL_USE_PSEUDO+ "= 0 WHERE "+COL_ID_USER+"='"+id+"'");
+            }
+
+        }
+        myUser =  this.getUser(id);
+        System.out.println(myUser.toString());
     }
 
    public void deleteTable(){
