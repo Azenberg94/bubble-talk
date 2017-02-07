@@ -13,7 +13,7 @@ public class User {
     private String name;
     private String avatar;
 
-    public User(String id, String pseudo, boolean usePseudo, String email, String name, String avatar) {
+    public User(String id, String pseudo, boolean usePseudo, String email, String name,  String avatar) {
         this.id = id;
         this.pseudo = pseudo;
         this.usePseudo = usePseudo;
@@ -64,7 +64,7 @@ public class User {
         this.name = name;
     }
 
-    public String getAvatar() {
+    public  String getAvatar() {
         return avatar;
     }
 

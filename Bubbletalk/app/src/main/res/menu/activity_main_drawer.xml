@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_my_bubble"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="Mes bulles" />
+        <item
+            android:id="@+id/nav_create_bubble"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="Créer une bulle" />
+        <item
+            android:id="@+id/nav_parametre"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Parametres" />
+        <item
+            android:id="@+id/nav_deco"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="Déconnexion" />
+    </group>
+
+</menu>

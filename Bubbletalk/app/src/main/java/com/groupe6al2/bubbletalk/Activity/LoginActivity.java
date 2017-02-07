@@ -22,13 +22,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.groupe6al2.bubbletalk.Class.BubbleTalkSQLite;
-import com.groupe6al2.bubbletalk.Class.User;
 import com.groupe6al2.bubbletalk.R;
 
 public class LoginActivity  extends BaseActivity implements
@@ -62,7 +58,8 @@ public class LoginActivity  extends BaseActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-
+        /*BubbleTalkSQLite bubbleTalkSQLite = new BubbleTalkSQLite(this);
+        bubbleTalkSQLite.deleteTable();*/
 
         // Button listeners
         findViewById(R.id.sign_in_button).setOnClickListener(this);

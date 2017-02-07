@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Base64;
 
 import java.util.ArrayList;
 
@@ -66,7 +67,7 @@ public class BubbleTalkSQLite extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM "+TABLE_USERS +" WHERE idUser = '"+id+"'",null);
         ArrayList<User> userList = new ArrayList<User>();
-        if (cursor .moveToFirst()) {
+        if (cursor.moveToFirst()) {
             while (cursor.isAfterLast() == false) {
                 myUser.setId(cursor.getString(cursor.getColumnIndex(COL_ID_USER)));
                 myUser.setName(cursor.getString(cursor.getColumnIndex(COL_NAME)));
@@ -85,8 +86,7 @@ public class BubbleTalkSQLite extends SQLiteOpenHelper {
 
     public void updateUser(String id,String[] data){
         SQLiteDatabase db = this.getWritableDatabase();
-        User myUser =  this.getUser(id);
-        System.out.println(myUser.toString());
+
         if(!data[0].isEmpty()){
             db.execSQL("UPDATE "+TABLE_USERS+" SET "+COL_PSEUDO+ "='"+data[0]+ "' WHERE "+COL_ID_USER+"='"+id+"'");
         }
@@ -97,20 +97,19 @@ public class BubbleTalkSQLite extends SQLiteOpenHelper {
             db.execSQL("UPDATE "+TABLE_USERS+" SET "+COL_NAME+ "='"+data[2]+ "' WHERE "+COL_ID_USER+"='"+id+"'");
         }
         if(!data[3].isEmpty()){
-            db.execSQL("UPDATE "+TABLE_USERS+" SET "+COL_AVATAR+ "='"+data[3]+ "' WHERE "+COL_ID_USER+"='"+id+"'");
-        }
-        if(!data[4].isEmpty()){
-            if (data[4].equals("true")){
+            if (data[3].equals("true")){
                 System.out.println("test true");
                 db.execSQL("UPDATE "+TABLE_USERS+" SET "+COL_USE_PSEUDO+ "= 1 WHERE "+COL_ID_USER+"='"+id+"'");
             }else{
                 System.out.println("test false");
                 db.execSQL("UPDATE "+TABLE_USERS+" SET "+COL_USE_PSEUDO+ "= 0 WHERE "+COL_ID_USER+"='"+id+"'");
             }
-
         }
-        myUser =  this.getUser(id);
-        System.out.println(myUser.toString());
+        if(!data[4].isEmpty()){
+            System.out.println(data[4].length());
+            db.execSQL("UPDATE "+TABLE_USERS+" SET "+COL_AVATAR+ "='"+ data[4] + "' WHERE "+COL_ID_USER+"='"+id+"'");
+        }
+
     }
 
    public void deleteTable(){
