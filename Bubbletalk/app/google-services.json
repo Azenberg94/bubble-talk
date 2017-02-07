@@ -15,22 +15,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "333409055751-0uf8lsmgs273okmcnasvkvr976g2926l.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.groupe6al2.bubbletalk",
-            "certificate_hash": "5F8EA482D14F93AA3DA3E99960072A487E145DBA"
-          }
-        },
-        {
-          "client_id": "333409055751-8sh3hpd6df9521l6mtjocu2nlb0moqdj.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.groupe6al2.bubbletalk",
-            "certificate_hash": "0ED5D08DB8AB814DA016B28854702649A66AE684"
-          }
-        },
-        {
           "client_id": "333409055751-tqdeu0gbmb9tk2gvdf1u2m4qsvjmrek2.apps.googleusercontent.com",
           "client_type": 3
         }
