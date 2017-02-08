@@ -8,7 +8,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.RemoteViews;
 import com.groupe6al2.bubbletalk.R;
-import com.groupe6al2.bubbletalk.Activity.LoginActivity;
+import com.groupe6al2.bubbletalk.Activity.NearbyActivity;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -61,7 +61,7 @@ public class NearbyOnOff extends AppWidgetProvider {
                 views.setImageViewResource(R.id.onoffButton, R.drawable.on);
                 AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
                 appWidgetManager.updateAppWidget(appWidgetId, views);
-                Intent intentStartApp = new Intent(context.getApplicationContext(), LoginActivity.class);
+                Intent intentStartApp = new Intent(context.getApplicationContext(), NearbyActivity.class);
                 intentStartApp.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intentStartApp);
             }else {

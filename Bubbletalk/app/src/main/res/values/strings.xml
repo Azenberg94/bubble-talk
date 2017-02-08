@@ -44,5 +44,11 @@
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
 
+    <string name="service_id">BubbleTalk_Nearbyservice</string>
+    <string name="hello_world">Hello world!</string>
+
+    <string name="connection_type_host">Host</string>
+    <string name="connection_type_client">Client</string>
+
 
 </resources>
