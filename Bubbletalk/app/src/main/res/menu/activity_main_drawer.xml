@@ -11,6 +11,10 @@
             android:icon="@drawable/ic_menu_gallery"
             android:title="Créer une bulle" />
         <item
+            android:id="@+id/nav_see_map"
+            android:icon="@drawable/ic_menu_map"
+            android:title="Carte" />
+        <item
             android:id="@+id/nav_parametre"
             android:icon="@drawable/ic_menu_manage"
             android:title="Parametres" />

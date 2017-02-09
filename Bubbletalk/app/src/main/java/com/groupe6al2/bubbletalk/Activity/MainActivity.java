@@ -170,6 +170,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_create_bubble) {
             Intent intent = new Intent(MainActivity.this, CreateBubbleActivity.class);
             startActivity(intent);
+        } else if (id == R.id.nav_see_map){
+            Intent intent = new Intent(MainActivity.this, MapsActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_parametre) {
             if(this.isConnectedInternet()==true) {
                 Intent intent = new Intent(MainActivity.this, ParamActivity.class);

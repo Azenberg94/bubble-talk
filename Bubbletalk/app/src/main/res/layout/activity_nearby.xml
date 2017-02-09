@@ -55,7 +55,7 @@
                 android:hint="Envoyer un message" />
 
         </android.support.design.widget.TextInputLayout>
-        
+
         <Button
             android:id="@+id/button_send"
             android:layout_width="0dp"
