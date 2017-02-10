@@ -44,22 +44,22 @@
             android:layout_height="wrap_content"
             android:id="@+id/checkBoxPseudo" />
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="255dp"
-            android:layout_height="255dp"
-            android:layout_gravity="center_horizontal">
 
-            <ImageView
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/avatar_default"
-                android:id="@+id/imageView"
-                android:layout_weight="0.50"
-                android:adjustViewBounds="true"
-                android:layout_centerInParent="true"
-                android:scaleType="centerCrop"/>
-        </LinearLayout>
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:srcCompat="@drawable/avatar_default"
+                    android:id="@+id/imageView"
+                    android:layout_weight="0.50"
+                    android:adjustViewBounds="true"
+                    android:layout_centerInParent="true"
+                    android:scaleType="fitXY"
+                    android:cropToPadding="false" />
+            </RelativeLayout>
 
         <Button
             android:text="Modfier mon avatar"
