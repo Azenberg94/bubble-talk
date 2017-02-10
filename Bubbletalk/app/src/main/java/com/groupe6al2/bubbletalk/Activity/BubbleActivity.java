@@ -69,9 +69,6 @@ public class BubbleActivity extends AppCompatActivity {
 
     }
 
-
-
-
     private void refreshMyBubble() {
         ArrayList<Bubble> bubbleArrayList = bubbleTalkSQLite.getMyBubbles();
         for(int i=0 ; i<bubbleArrayList.size(); i++){
