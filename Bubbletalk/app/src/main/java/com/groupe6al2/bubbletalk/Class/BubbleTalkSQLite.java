@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 public class BubbleTalkSQLite extends SQLiteOpenHelper {
 
-    private static final int version = 9;
+    private static final int version = 10;
     private static final String Name_DataBase = "BubbleTalk";
     private static final String TABLE_USERS = "UserBubble";
     private static final String COL_IDU = "id";
@@ -28,6 +28,7 @@ public class BubbleTalkSQLite extends SQLiteOpenHelper {
     private static final String TABLE_BUBBLE= "BubbleBubble";
     private static final String COL_IDB = "id";
     private static final String COL_ID_BUBBLE = "idBubble";
+    private static final String COL_NAME_BUBBLE = "name";
     private static final String COL_PROPRIO = "proprio";
     private static final String COL_AVATAR_MD5_BUBBLE = "avatarMd5";
 
@@ -48,7 +49,7 @@ public class BubbleTalkSQLite extends SQLiteOpenHelper {
         );
         db.execSQL(
                 "create table BubbleBubble " +
-                        "("+COL_IDB+" interger primary key,"+COL_ID_BUBBLE+" text, "+COL_PROPRIO+" int,"+COL_AVATAR_MD5_BUBBLE+" text)"
+                        "("+COL_IDB+" interger primary key,"+COL_ID_BUBBLE+" text, "+COL_NAME_BUBBLE+" text,"+COL_PROPRIO+" int,"+COL_AVATAR_MD5_BUBBLE+" text)"
         );
     }
 
@@ -76,6 +77,7 @@ public class BubbleTalkSQLite extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues value = new ContentValues();
         value.put(COL_ID_BUBBLE, bubble.getId());
+        value.put(COL_NAME_BUBBLE, bubble.getName());
         value.put(COL_PROPRIO, bubble.getProprio());
         value.put(COL_AVATAR_MD5_BUBBLE, bubble.getAvatarMd5());
         db.insert(TABLE_BUBBLE,null,value);
@@ -110,7 +112,7 @@ public class BubbleTalkSQLite extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("SELECT * FROM "+TABLE_BUBBLE +" WHERE proprio = 1 ",null);
         if (cursor.moveToFirst()) {
             while (cursor.isAfterLast() == false) {
-                bubbleArrayList.add(new Bubble(cursor.getString(cursor.getColumnIndex(COL_ID_BUBBLE)), 1, cursor.getString(cursor.getColumnIndex(COL_AVATAR_MD5_BUBBLE))));
+                bubbleArrayList.add(new Bubble(cursor.getString(cursor.getColumnIndex(COL_ID_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_NAME_BUBBLE)), 1, cursor.getString(cursor.getColumnIndex(COL_AVATAR_MD5_BUBBLE))));
                 cursor.moveToNext();
             }
         }

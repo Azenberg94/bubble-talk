@@ -135,8 +135,8 @@ public class CreateBubbleActivity extends AppCompatActivity {
             Toast.makeText(CreateBubbleActivity.this, "Veuillez saisir un nom !",Toast.LENGTH_SHORT).show();
         }else if(editTextNameCreateBubble.getText().toString().length()<3 || editTextNameCreateBubble.getText().toString().length()>50 ){
             Toast.makeText(CreateBubbleActivity.this, "Le nom de bulle doit faire entre 3 et 50 caractères pour pouvoir être utilisé !",Toast.LENGTH_SHORT).show();
-        }else if (editTextDescriptionCreateBubble.getText().toString().length()>250) {
-            Toast.makeText(CreateBubbleActivity.this, "La description ne peut dépasser les 250 caractères !",Toast.LENGTH_SHORT).show();
+        }else if (editTextDescriptionCreateBubble.getText().toString().length()>50) {
+            Toast.makeText(CreateBubbleActivity.this, "La description ne peut dépasser les 50 caractères !",Toast.LENGTH_SHORT).show();
         }else if(network==null || !network.isConnected()) {
             Toast.makeText(CreateBubbleActivity.this, "Veuillez verifiez votre connexion internet !",Toast.LENGTH_SHORT).show();
         }else{
@@ -162,7 +162,7 @@ public class CreateBubbleActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            Bubble bubble = new Bubble(myId, 1, myMd5);
+            Bubble bubble = new Bubble( myId, editTextNameCreateBubble.getText().toString(), 1, myMd5);
             BubbleTalkSQLite bubbleTalkSQLite = new BubbleTalkSQLite(this);
             bubbleTalkSQLite.addBubble(bubble);
 
