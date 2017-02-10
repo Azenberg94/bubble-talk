@@ -36,6 +36,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.groupe6al2.bubbletalk.Class.BubbleTalkSQLite;
 import com.groupe6al2.bubbletalk.Class.User;
+import com.groupe6al2.bubbletalk.Class.Utils;
 import com.groupe6al2.bubbletalk.R;
 
 public class MainActivity extends AppCompatActivity
@@ -175,7 +176,7 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(MainActivity.this, MapsActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_parametre) {
-            if(this.isConnectedInternet()==true) {
+            if(Utils.isConnectedInternet(this)==true) {
                 Intent intent = new Intent(MainActivity.this, ParamActivity.class);
                 startActivity(intent);
             }else{
@@ -203,16 +204,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public boolean isConnectedInternet()
-    {
-        // Fonction haveInternetConnection : return true si connecté, return false dans le cas contraire
-        NetworkInfo network = ((ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
-        if (network==null || !network.isConnected())
-        {
-            return false;
-        }
-        return true;
-    }
+
 
 
 

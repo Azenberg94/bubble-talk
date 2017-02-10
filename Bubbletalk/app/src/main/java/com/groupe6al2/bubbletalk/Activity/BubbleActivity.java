@@ -15,6 +15,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.groupe6al2.bubbletalk.Class.Bubble;
 import com.groupe6al2.bubbletalk.Class.BubbleTalkSQLite;
+import com.groupe6al2.bubbletalk.Class.Utils;
 import com.groupe6al2.bubbletalk.R;
 
 import java.util.ArrayList;
@@ -29,11 +30,18 @@ public class BubbleActivity extends AppCompatActivity {
     StorageReference storageRef;
     BubbleTalkSQLite bubbleTalkSQLite;
     ListView listViewMyBubble;
+    ListView listViewHisto;
+    ListView listViewProche;
 
     //DEFINING A STRING ADAPTER WHICH WILL HANDLE THE DATA OF THE LISTVIEW
-    ArrayAdapter<String> adapter;
+    ArrayAdapter<String> adapterMyBubble;
+    ArrayAdapter<String> adapterProche;
+    ArrayAdapter<String> adapterHisto;
+
     //LIST OF ARRAY STRINGS WHICH WILL SERVE AS LIST ITEMS
-    ArrayList<String> listItems=new ArrayList<String>();
+    ArrayList<String> listItemsMyBubble=new ArrayList<String>();
+    ArrayList<String> listItemsProche=new ArrayList<String>();
+    ArrayList<String> listItemsHisto=new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,24 +60,44 @@ public class BubbleActivity extends AppCompatActivity {
         bubbleTalkSQLite = new BubbleTalkSQLite(this);
 
         listViewMyBubble = (ListView) findViewById(R.id.listViewMyBubble);
+        listViewProche = (ListView) findViewById(R.id.listViewProche);
+        listViewHisto = (ListView) findViewById(R.id.listViewHisto);
 
+        refreshMyBubble();
+        refreshBubbleProche();
+        refreshHisto();
 
-        refreshMy();
     }
 
 
-    private void refreshMy() {
 
 
+    private void refreshMyBubble() {
         ArrayList<Bubble> bubbleArrayList = bubbleTalkSQLite.getMyBubbles();
         for(int i=0 ; i<bubbleArrayList.size(); i++){
-            listItems.add(bubbleArrayList.get(i).getName());
+            listItemsMyBubble.add(bubbleArrayList.get(i).getName());
         }
-        adapter=new ArrayAdapter<String>(this,
+        adapterMyBubble=new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1,
-                listItems);
-        listViewMyBubble.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+                listItemsMyBubble);
+        listViewMyBubble.setAdapter(adapterMyBubble);
+        adapterMyBubble.notifyDataSetChanged();
+    }
+
+    private void refreshBubbleProche() {
+        if(Utils.isConnectedInternet(this)==false) {
+            listItemsProche.add("Veuillez verifiez votre connexion internet.");
+        }else{
+
+        }
+        adapterProche=new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1,
+                listItemsProche);
+        listViewProche.setAdapter(adapterProche);
+        adapterProche.notifyDataSetChanged();
+    }
+
+    private void refreshHisto() {
     }
 
 

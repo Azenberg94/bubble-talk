@@ -6,6 +6,8 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -63,5 +65,16 @@ public class Utils {
                     Integer.toString((inBytes[i] & 0xff) + 0x100, 16).substring(1);
         }                                   // Belongs to for loop ID:1
         return hexString;
+    }
+
+    public static boolean isConnectedInternet(Context context)
+    {
+        // Fonction haveInternetConnection : return true si connecté, return false dans le cas contraire
+        NetworkInfo network = ((ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+        if (network==null || !network.isConnected())
+        {
+            return false;
+        }
+        return true;
     }
 }

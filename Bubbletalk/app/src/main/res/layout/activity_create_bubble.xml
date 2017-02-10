@@ -44,7 +44,7 @@
             android:inputType="textMultiLine"
             android:ems="10"
             android:id="@+id/editTextDescriptionCreateBubble"
-            android:hint="Description (250 caractères max)" /></RelativeLayout>
+            android:hint="Description (50 caractères max)" /></RelativeLayout>
 
 
         <LinearLayout
