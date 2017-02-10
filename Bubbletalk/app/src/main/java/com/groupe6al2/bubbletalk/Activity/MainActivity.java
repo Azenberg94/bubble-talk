@@ -166,7 +166,8 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_my_bubble) {
-
+            Intent intent = new Intent(MainActivity.this, BubbleActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_create_bubble) {
             Intent intent = new Intent(MainActivity.this, CreateBubbleActivity.class);
             startActivity(intent);

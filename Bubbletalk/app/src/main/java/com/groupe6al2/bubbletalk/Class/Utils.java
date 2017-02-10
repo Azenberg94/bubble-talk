@@ -56,5 +56,12 @@ public class Utils {
 
     }
 
-
+    public static String returnHex(byte[] inBytes) throws Exception {
+        String hexString = "";
+        for (int i = 0; i < inBytes.length; i++) { //for loop ID:1
+            hexString +=
+                    Integer.toString((inBytes[i] & 0xff) + 0x100, 16).substring(1);
+        }                                   // Belongs to for loop ID:1
+        return hexString;
+    }
 }

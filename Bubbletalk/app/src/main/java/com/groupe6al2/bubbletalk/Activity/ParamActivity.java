@@ -34,8 +34,11 @@ import com.groupe6al2.bubbletalk.Class.User;
 import com.groupe6al2.bubbletalk.R;
 
 import java.io.ByteArrayOutputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import static com.groupe6al2.bubbletalk.Class.Utils.readBytesFromFile;
+import static com.groupe6al2.bubbletalk.Class.Utils.returnHex;
 
 public class ParamActivity extends AppCompatActivity {
 
@@ -150,11 +153,10 @@ public class ParamActivity extends AppCompatActivity {
             // byte[] test = Base64.decode(myBtoS, Base64.DEFAULT);
             Bitmap bitmap = BitmapFactory.decodeByteArray(avatarDisplay,0,avatarDisplay.length);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG,25,stream);
+            bitmap.compress(Bitmap.CompressFormat.JPEG,20,stream);
             avatarDisplay = stream.toByteArray();
             System.out.println("AFTER : " + avatarDisplay.length);
             imageView.setImageBitmap(bitmap);
-
 
         }
     }
@@ -213,6 +215,16 @@ public class ParamActivity extends AppCompatActivity {
             currentUser.setAvatar(avatar);
             avatarBefore = avatarDisplay;
             updateFirebaseAndPreferenceStorage();
+            try {
+                MessageDigest md = MessageDigest.getInstance("MD5");
+                md.update(avatarDisplay);
+                byte[] hash = md.digest();
+                database.getReference("User").child(user.getUid()).child("md5Avatar").setValue(returnHex(hash));
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             testUpdate = true;
         }
 
@@ -221,6 +233,8 @@ public class ParamActivity extends AppCompatActivity {
             Toast.makeText(ParamActivity.this, "Modification sauvegardée !", Toast.LENGTH_SHORT).show();
         }
     }
+
+
 
     public void updateFirebaseAndPreferenceStorage(){
 

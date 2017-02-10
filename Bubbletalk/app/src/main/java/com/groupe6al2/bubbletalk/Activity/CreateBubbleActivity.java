@@ -3,6 +3,7 @@ package com.groupe6al2.bubbletalk.Activity;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -14,20 +15,37 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.groupe6al2.bubbletalk.Class.Bubble;
+import com.groupe6al2.bubbletalk.Class.BubbleTalkSQLite;
 import com.groupe6al2.bubbletalk.Class.Utils;
 import com.groupe6al2.bubbletalk.R;
 
 import java.io.ByteArrayOutputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+
+import static com.groupe6al2.bubbletalk.Class.Utils.returnHex;
 
 public class CreateBubbleActivity extends AppCompatActivity {
 
@@ -43,13 +61,17 @@ public class CreateBubbleActivity extends AppCompatActivity {
     double longitude;
     double latitude;
 
+    FirebaseUser user;
+    FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_bubble);
 
-        manager = (LocationManager) getSystemService( this.LOCATION_SERVICE );
+        auth = FirebaseAuth.getInstance();
+        user= auth.getCurrentUser();
+
         network = ((ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
 
         Button buttonValidateCreateBubble = (Button) findViewById(R.id.buttonValidateCreateBubble);
@@ -99,15 +121,12 @@ public class CreateBubbleActivity extends AppCompatActivity {
             imageView.setDrawingCacheEnabled(true);
             imageView.buildDrawingCache();
 
-
             Bitmap bitmap = BitmapFactory.decodeByteArray(avatarBubbleDisplay,0,avatarBubbleDisplay.length);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG,25,stream);
+            bitmap.compress(Bitmap.CompressFormat.JPEG,20,stream);
             avatarBubbleDisplay = stream.toByteArray();
 
             imageView.setImageBitmap(bitmap);
-
-
         }
     }
 
@@ -118,63 +137,63 @@ public class CreateBubbleActivity extends AppCompatActivity {
             Toast.makeText(CreateBubbleActivity.this, "Le nom de bulle doit faire entre 3 et 50 caractères pour pouvoir être utilisé !",Toast.LENGTH_SHORT).show();
         }else if (editTextDescriptionCreateBubble.getText().toString().length()>250) {
             Toast.makeText(CreateBubbleActivity.this, "La description ne peut dépasser les 250 caractères !",Toast.LENGTH_SHORT).show();
-        }else if( !manager.isProviderEnabled(LocationManager.GPS_PROVIDER ) || network==null || !network.isConnected()) {
-            Toast.makeText(CreateBubbleActivity.this, "Veuillez verifiez votre connexion internet et activer votre géolocalisation !",Toast.LENGTH_SHORT).show();
+        }else if(network==null || !network.isConnected()) {
+            Toast.makeText(CreateBubbleActivity.this, "Veuillez verifiez votre connexion internet !",Toast.LENGTH_SHORT).show();
         }else{
-            Double[] location  = this.getCurrentLocation(manager);
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference databaseReference = database.getReference("bubble").push();
+            databaseReference.child("name").setValue(editTextNameCreateBubble.getText().toString());
+            databaseReference.child("description").setValue(editTextDescriptionCreateBubble.getText().toString());
+            databaseReference.child("proprio").setValue(user.getUid());
 
-            System.out.println("longitude " +location[0].toString());
-            System.out.println("latitude " +location[1].toString());
+            String myId = databaseReference.getKey();
+            updateFirebaseStorage(myId);
+            String myMd5 ="";
+            MessageDigest md = null;
+            try {
+                md = MessageDigest.getInstance("MD5");
+                md.update(avatarBubbleDisplay);
+                byte[] hash = md.digest();
+                myMd5 = returnHex(hash);
+                databaseReference.child("md5Bubble").setValue(myMd5);
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            Bubble bubble = new Bubble(myId, 1, myMd5);
+            BubbleTalkSQLite bubbleTalkSQLite = new BubbleTalkSQLite(this);
+            bubbleTalkSQLite.addBubble(bubble);
+
+            Toast.makeText(CreateBubbleActivity.this, "Votre Bubble a été créee avec succès !",Toast.LENGTH_SHORT).show();
+
+            finish();
         }
     }
 
 
-    public Double[] getCurrentLocation(LocationManager locationManager) {
 
-        LocationListener locationListener = new LocationListener() {
-            public void onLocationChanged(Location location) {
-                // Called when a new location is found by the network location provider.
-                longitude = location.getLongitude();
-                latitude = location.getLatitude();
+    public void updateFirebaseStorage(String id){
+
+        // Points to the root reference
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReferenceFromUrl("gs://bubbletalk-967fa.appspot.com");
+        StorageReference avatarFileRef = storageRef.child("bubble/"+id);
+
+        UploadTask uploadTask = avatarFileRef.putBytes(avatarBubbleDisplay);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
             }
-
-            public void onStatusChanged(String provider, int status, Bundle extras) {
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                Uri downloadUrl = taskSnapshot.getDownloadUrl();
             }
-
-            public void onProviderEnabled(String provider) {
-            }
-
-            public void onProviderDisabled(String provider) {
-            }
-        };
-
-        String provider = locationManager.GPS_PROVIDER;
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return null;
-        }
-        locationManager.requestLocationUpdates(provider, 0, 0, locationListener);
-
-        ArrayList<String> names = (ArrayList<String>) locationManager.getAllProviders();
-
-        //Location location = new Location(provider);
-        //Location lastKnownLocation = new Location(provider);
-        Location location;
-        location = new Location(provider);
-        locationManager.getLastKnownLocation(provider);
-        if(location!=null){
-            longitude=location.getLongitude();
-            latitude=location.getLatitude();
-
-        }
-
-        return new Double[]{longitude, latitude};
+        });
     }
+
 }

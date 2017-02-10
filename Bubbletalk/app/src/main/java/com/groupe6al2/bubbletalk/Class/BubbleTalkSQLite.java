@@ -15,16 +15,21 @@ import java.util.ArrayList;
 
 public class BubbleTalkSQLite extends SQLiteOpenHelper {
 
-    private static final int version = 7;
+    private static final int version = 9;
     private static final String Name_DataBase = "BubbleTalk";
     private static final String TABLE_USERS = "UserBubble";
-    private static final String COL_ID = "id";
+    private static final String COL_IDU = "id";
     private static final String COL_ID_USER = "idUser";
     private static final String COL_PSEUDO = "pseudo";
     private static final String COL_EMAIL = "email";
     private static final String COL_NAME = "name";
     private static final String COL_AVATAR = "avatar";
     private static final String COL_USE_PSEUDO = "usePseudo";
+    private static final String TABLE_BUBBLE= "BubbleBubble";
+    private static final String COL_IDB = "id";
+    private static final String COL_ID_BUBBLE = "idBubble";
+    private static final String COL_PROPRIO = "proprio";
+    private static final String COL_AVATAR_MD5_BUBBLE = "avatarMd5";
 
 
 
@@ -39,13 +44,18 @@ public class BubbleTalkSQLite extends SQLiteOpenHelper {
         // TODO Auto-generated method stub
         db.execSQL(
                 "create table UserBubble " +
-                        "("+COL_ID+" interger primary key,"+COL_ID_USER+" text, "+COL_NAME+" text,pseudo text,"+COL_USE_PSEUDO+" boolean, "+COL_EMAIL+" text, "+COL_AVATAR+" text)"
+                        "("+COL_IDU+" interger primary key,"+COL_ID_USER+" text, "+COL_NAME+" text,pseudo text,"+COL_USE_PSEUDO+" boolean, "+COL_EMAIL+" text, "+COL_AVATAR+" text)"
+        );
+        db.execSQL(
+                "create table BubbleBubble " +
+                        "("+COL_IDB+" interger primary key,"+COL_ID_BUBBLE+" text, "+COL_PROPRIO+" int,"+COL_AVATAR_MD5_BUBBLE+" text)"
         );
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_BUBBLE);
         onCreate(db);
     }
 
@@ -61,6 +71,16 @@ public class BubbleTalkSQLite extends SQLiteOpenHelper {
         db.insert(TABLE_USERS, null, value);
 
     }
+
+    public void addBubble(Bubble bubble){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues value = new ContentValues();
+        value.put(COL_ID_BUBBLE, bubble.getId());
+        value.put(COL_PROPRIO, bubble.getProprio());
+        value.put(COL_AVATAR_MD5_BUBBLE, bubble.getAvatarMd5());
+        db.insert(TABLE_BUBBLE,null,value);
+    }
+
 
     public User getUser(String id){
         User myUser = new User();
@@ -82,6 +102,19 @@ public class BubbleTalkSQLite extends SQLiteOpenHelper {
             }
         }
         return userList.get(0);
+    }
+
+    public ArrayList<Bubble> getMyBubbles(){
+        ArrayList<Bubble> bubbleArrayList = new ArrayList<>();
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM "+TABLE_BUBBLE +" WHERE proprio = 1 ",null);
+        if (cursor.moveToFirst()) {
+            while (cursor.isAfterLast() == false) {
+                bubbleArrayList.add(new Bubble(cursor.getString(cursor.getColumnIndex(COL_ID_BUBBLE)), 1, cursor.getString(cursor.getColumnIndex(COL_AVATAR_MD5_BUBBLE))));
+                cursor.moveToNext();
+            }
+        }
+        return bubbleArrayList;
     }
 
     public void updateUser(String id,String[] data){
