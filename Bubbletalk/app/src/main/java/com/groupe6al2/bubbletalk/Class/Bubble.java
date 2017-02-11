@@ -7,13 +7,15 @@ package com.groupe6al2.bubbletalk.Class;
 public class Bubble {
 
     private String id;
-    private int proprio;
+    private String proprio;
     private String avatarMd5;
     private String name;
+    private String description;
 
-    public Bubble(String id, String name, int proprio, String avatarMd5) {
+    public Bubble(String id, String name, String description, String proprio, String avatarMd5) {
         this.id = id;
         this.name = name;
+        this.description = description;
         this.proprio = proprio;
         this.avatarMd5 = avatarMd5;
     }
@@ -34,11 +36,11 @@ public class Bubble {
         this.avatarMd5 = avatarMd5;
     }
 
-    public int getProprio() {
+    public String getProprio() {
         return proprio;
     }
 
-    public void setProprio(int proprio) {
+    public void setProprio(String proprio) {
         this.proprio = proprio;
     }
 
@@ -50,6 +52,14 @@ public class Bubble {
         this.name = name;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     @Override
     public String toString() {
         return "Bubble{" +
@@ -57,6 +67,7 @@ public class Bubble {
                 ", proprio=" + proprio +
                 ", avatarMd5='" + avatarMd5 + '\'' +
                 ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
                 '}';
     }
 }

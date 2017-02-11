@@ -8,29 +8,18 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-
 import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
+import com.groupe6al2.bubbletalk.Class.Bubble;
 import com.groupe6al2.bubbletalk.Class.BubbleTalkSQLite;
-import com.groupe6al2.bubbletalk.Class.User;
 import com.groupe6al2.bubbletalk.R;
 
 import java.io.ByteArrayOutputStream;
@@ -40,78 +29,45 @@ import java.security.NoSuchAlgorithmException;
 import static com.groupe6al2.bubbletalk.Class.Utils.readBytesFromFile;
 import static com.groupe6al2.bubbletalk.Class.Utils.returnHex;
 
-public class ParamActivity extends AppCompatActivity {
+public class MyBubbleActivity extends AppCompatActivity {
 
-    TextView textViewName;
-    FirebaseUser user;
-    FirebaseAuth auth;
-    FirebaseStorage storage = FirebaseStorage.getInstance();
-    StorageReference storageRef = storage.getReferenceFromUrl("gs://bubbletalk-967fa.appspot.com");
-
-    SharedPreferences shre;
-
+    String idBubble;
+    EditText editTextMyBubbleName;
+    EditText editTextMyBubbleDescription;
     BubbleTalkSQLite bubbleTalkSQLite;
-    User currentUser;
-
-    String pseudoBefore;
-    boolean usePseudoBefore;
-    byte[] avatarBefore =  new byte[0];
+    byte[] avatarBefore = new byte[0];
     byte[] avatarDisplay = new byte[0];
-    EditText editTextPseudo;
-    CheckBox checkBox;
     ImageView imageView;
+    SharedPreferences shre;
+    Bubble bubble;
 
-    String myAvatar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_param);
+        setContentView(R.layout.activity_my_bubble);
+
+        bubbleTalkSQLite= new BubbleTalkSQLite(this);
 
         //Shared pref
         shre = PreferenceManager.getDefaultSharedPreferences(this);
 
-        //Firebase user
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        auth = FirebaseAuth.getInstance();
-        user= auth.getCurrentUser();
-        myAvatar = user.getUid()+".jpg";
+        Intent myIntent = getIntent();
+        idBubble = myIntent.getStringExtra("id");
+        bubble = bubbleTalkSQLite.getOneBubble(idBubble);
 
-        //Local user
-        bubbleTalkSQLite= new BubbleTalkSQLite(this);
-        currentUser =  bubbleTalkSQLite.getUser(user.getUid());
-        pseudoBefore = currentUser.getPseudo();
-        usePseudoBefore = currentUser.getUsePseudo();
+        editTextMyBubbleName = (EditText) findViewById(R.id.editTextMyBubbleName);
+        editTextMyBubbleName.setText(bubble.getName());
 
-        //initialize component
-        textViewName = (TextView) findViewById(R.id.textViewName);
-        textViewName.setText(currentUser.getName());
+        editTextMyBubbleDescription = (EditText) findViewById(R.id.editTextMyBubbleDescription);
+        editTextMyBubbleDescription.setText(bubble.getDescription());
 
-        editTextPseudo = (EditText) findViewById(R.id.editTextPseudo);
-        editTextPseudo.setText(currentUser.getPseudo());
-
-        imageView = (ImageView) findViewById(R.id.imageView);
-
-        checkBox = (CheckBox) findViewById(R.id.checkBoxPseudo);
-        //System.out.println("usePseudo : " + currentUser.getUsePseudo());
-        if(currentUser.getUsePseudo()==true){
-            checkBox.setChecked(true);
-        }
+        avatarBefore = Base64.decode(shre.getString("bubble_"+bubble.getId(),""), Base64.DEFAULT);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(avatarBefore,0,avatarBefore.length);
+        imageView = (ImageView) findViewById(R.id.imageViewMyBubble);
+        imageView.setImageBitmap(bitmap);
 
 
-       /* if(savedInstanceState != null)
-        {
-            avatarDisplay = savedInstanceState.getByteArray("myAvatar");
-        }
-        if (avatarDisplay.length>0){
-            Bitmap bitmap = BitmapFactory.decodeByteArray(avatarDisplay,0,avatarDisplay.length);
-            imageView.setImageBitmap(bitmap);
-        } else */if(!shre.getString("avatar_"+user.getUid(),"").equals("")){
-            avatarBefore = Base64.decode(shre.getString("avatar_"+user.getUid(),""), Base64.DEFAULT);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(avatarBefore,0,avatarBefore.length);
-            imageView.setImageBitmap(bitmap);
-        }
-
-        Button buttonUpdateAvatar = (Button) findViewById(R.id.buttonUpadteAvatar);
+        Button buttonUpdateAvatar = (Button) findViewById(R.id.buttonUpdateAvatarMyBubble);
         buttonUpdateAvatar.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View arg0) {
@@ -123,16 +79,16 @@ public class ParamActivity extends AppCompatActivity {
             }
         });
 
-        Button buttonSave = (Button) findViewById(R.id.buttonSave);
+        Button buttonSave = (Button) findViewById(R.id.buttonSaveMyBubble);
         buttonSave.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                saveProfile();
+                updateBubble();
             }
         });
 
-
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -151,7 +107,6 @@ public class ParamActivity extends AppCompatActivity {
             cursor.close();
 
             avatarDisplay = readBytesFromFile(picturePath);
-            System.out.println("BEFORE : " + avatarDisplay.length);
             // Get the data from an ImageView as bytes
             imageView.setDrawingCacheEnabled(true);
             imageView.buildDrawingCache();
@@ -168,30 +123,23 @@ public class ParamActivity extends AppCompatActivity {
     }
 
 
-    public void saveProfile(){
+
+    public void updateBubble(){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        String pseudo = pseudoBefore;
-        Boolean usePseudo = usePseudoBefore;
-        String usePseudoStr = "";
-        String avatar = "";
         boolean testUpdate = false;
+        String name="";
 
-        if(!pseudoBefore.equals(editTextPseudo.getText().toString())){
-            if(editTextPseudo.length()>2 || editTextPseudo.length()==0) {
-
-                if(editTextPseudo.length()==0){
-                    checkBox.setChecked(false);
-                }
-                pseudo = editTextPseudo.getText().toString();
-                currentUser.setPseudo(pseudo);
-                database.getReference("User").child(user.getUid()).child("pseudo").setValue(pseudo);
-                pseudoBefore =  editTextPseudo.getText().toString();
+        if(!bubble.getName().equals(editTextMyBubbleName.getText().toString())){
+            if(editTextMyBubbleName.length()>2 || editTextMyBubbleName.length()==0) {
+                name = editTextMyBubbleName.getText().toString();
+                bubble.setName(name);
+                database.getReference("bubble").child(idBubble).child("name").setValue(name);
                 testUpdate = true;
             }else{
-                Toast.makeText(ParamActivity.this, "Votre Pseudo doit faire au moins 3 caractères !",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Votre nom de Bubble doit faire au moins 3 caractères !",Toast.LENGTH_SHORT).show();
             }
         }
-
+/*
         if(usePseudoBefore!=checkBox.isChecked()){
             if(editTextPseudo.length()==0) {
                 usePseudoStr = "false";
@@ -236,45 +184,8 @@ public class ParamActivity extends AppCompatActivity {
 
         if(testUpdate == true) {
             bubbleTalkSQLite.updateUser(user.getUid(), new String[]{pseudo, "", "", usePseudoStr, avatar});
-            Toast.makeText(ParamActivity.this, "Modification sauvegardée !", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-
-
-    public void updateFirebaseAndPreferenceStorage(){
-
-        String encodedImage = Base64.encodeToString(avatarDisplay, Base64.DEFAULT);
-        SharedPreferences.Editor edit=shre.edit();
-        edit.putString("avatar_"+user.getUid(),encodedImage);
-        edit.commit();
-
-
-        // Points to the root reference
-
-        StorageReference storageRef = storage.getReferenceFromUrl("gs://bubbletalk-967fa.appspot.com");
-        StorageReference avatarFileRef = storageRef.child("avatar/"+myAvatar);
-
-
-        UploadTask uploadTask = avatarFileRef.putBytes(avatarDisplay);
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                Uri downloadUrl = taskSnapshot.getDownloadUrl();
-            }
-        });
-    }
-    @Override
-    protected void onSaveInstanceState(Bundle outState)
-    {
-        super.onSaveInstanceState(outState);
-        outState.putByteArray("myAvatar", avatarDisplay);
+            Toast.makeText(this, "Modification sauvegardée !", Toast.LENGTH_SHORT).show();
+        }*/
     }
 
 }

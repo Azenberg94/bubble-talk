@@ -79,7 +79,8 @@
         </receiver>
 
         <activity android:name=".Activity.NearbyActivity" />
-        <activity android:name=".Activity.BubbleActivity"></activity>
+        <activity android:name=".Activity.BubbleActivity" />
+        <activity android:name=".Activity.MyBubbleActivity"></activity>
     </application>
 
 </manifest>
