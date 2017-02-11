@@ -1,5 +1,6 @@
 package com.groupe6al2.bubbletalk.Activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -8,6 +9,8 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
@@ -17,7 +20,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.groupe6al2.bubbletalk.Class.Bubble;
 import com.groupe6al2.bubbletalk.Class.BubbleTalkSQLite;
 import com.groupe6al2.bubbletalk.R;
@@ -41,12 +49,15 @@ public class MyBubbleActivity extends AppCompatActivity {
     SharedPreferences shre;
     Bubble bubble;
 
+    FirebaseStorage storage = FirebaseStorage.getInstance();
+    StorageReference storageRef = storage.getReferenceFromUrl("gs://bubbletalk-967fa.appspot.com");
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_bubble);
 
-        bubbleTalkSQLite= new BubbleTalkSQLite(this);
+        bubbleTalkSQLite = new BubbleTalkSQLite(this);
 
         //Shared pref
         shre = PreferenceManager.getDefaultSharedPreferences(this);
@@ -61,14 +72,15 @@ public class MyBubbleActivity extends AppCompatActivity {
         editTextMyBubbleDescription = (EditText) findViewById(R.id.editTextMyBubbleDescription);
         editTextMyBubbleDescription.setText(bubble.getDescription());
 
-        avatarBefore = Base64.decode(shre.getString("bubble_"+bubble.getId(),""), Base64.DEFAULT);
-        Bitmap bitmap = BitmapFactory.decodeByteArray(avatarBefore,0,avatarBefore.length);
+
+        avatarBefore = Base64.decode(shre.getString("bubble_" + bubble.getId(), ""), Base64.DEFAULT);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(avatarBefore, 0, avatarBefore.length);
         imageView = (ImageView) findViewById(R.id.imageViewMyBubble);
+        imageView.setImageBitmap(null);
         imageView.setImageBitmap(bitmap);
 
-
         Button buttonUpdateAvatar = (Button) findViewById(R.id.buttonUpdateAvatarMyBubble);
-        buttonUpdateAvatar.setOnClickListener(new View.OnClickListener(){
+        buttonUpdateAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
                 Intent i = new Intent(
@@ -80,12 +92,41 @@ public class MyBubbleActivity extends AppCompatActivity {
         });
 
         Button buttonSave = (Button) findViewById(R.id.buttonSaveMyBubble);
-        buttonSave.setOnClickListener(new View.OnClickListener(){
+        buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 updateBubble();
             }
         });
+
+        Button buttonDelete = (Button) findViewById(R.id.buttonDeleteMyBubble);
+        buttonDelete.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                AlertDialog alertDialog = new AlertDialog.Builder(v.getContext())
+                        .setTitle("Confirmation")
+                        .setMessage("Supprimer la Bubble ?")
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                deleteBubble();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, null).show();
+            }
+        });
+
+        Button buttonMyBubbleNearby = (Button) findViewById(R.id.buttonMyBubbleNearby);
+        buttonMyBubbleNearby.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goNearbyGO();
+            }
+        });
+
+    }
+
+    private void goNearbyGO() {
 
     }
 
@@ -123,14 +164,15 @@ public class MyBubbleActivity extends AppCompatActivity {
     }
 
 
-
     public void updateBubble(){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         boolean testUpdate = false;
         String name="";
+        String description ="";
+        String avatar="";
 
         if(!bubble.getName().equals(editTextMyBubbleName.getText().toString())){
-            if(editTextMyBubbleName.length()>2 || editTextMyBubbleName.length()==0) {
+            if(editTextMyBubbleName.length()>2) {
                 name = editTextMyBubbleName.getText().toString();
                 bubble.setName(name);
                 database.getReference("bubble").child(idBubble).child("name").setValue(name);
@@ -139,41 +181,28 @@ public class MyBubbleActivity extends AppCompatActivity {
                 Toast.makeText(this, "Votre nom de Bubble doit faire au moins 3 caractères !",Toast.LENGTH_SHORT).show();
             }
         }
-/*
-        if(usePseudoBefore!=checkBox.isChecked()){
-            if(editTextPseudo.length()==0) {
-                usePseudoStr = "false";
-                usePseudo = false;
-                currentUser.setUsePseudo(usePseudo);
-                database.getReference("User").child(user.getUid()).child("usePseudo").setValue(usePseudo);
-                testUpdate = true;
-            }else if(editTextPseudo.length()>2 ) {
-                if (checkBox.isChecked()) {
-                    usePseudoStr = "true";
-                    usePseudo = true;
-                } else {
-                    usePseudoStr = "false";
-                    usePseudo = false;
-                }
 
-                currentUser.setUsePseudo(usePseudo);
-                database.getReference("User").child(user.getUid()).child("usePseudo").setValue(usePseudo);
-                usePseudoBefore = checkBox.isChecked();
+        if(!bubble.getDescription().equals(editTextMyBubbleDescription.getText().toString())){
+            if(editTextMyBubbleDescription.length()<50) {
+                description = editTextMyBubbleDescription.getText().toString();
+                bubble.setDescription(description);
+                database.getReference("bubble").child(idBubble).child("description").setValue(description);
+                testUpdate = true;
             }else{
-                Toast.makeText(ParamActivity.this, "Votre Pseudo doit faire au moins 3 caractères pour pouvoir être utilisé!",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Votre description de Bubble ne doit faire plus de 50 caractères !",Toast.LENGTH_SHORT).show();
             }
         }
 
-        if(!avatarBefore.equals(avatarDisplay)){
-            avatar = "true";
-            currentUser.setAvatar(avatar);
+        if(avatarBefore!=avatarDisplay){
+
             avatarBefore = avatarDisplay;
             updateFirebaseAndPreferenceStorage();
             try {
                 MessageDigest md = MessageDigest.getInstance("MD5");
                 md.update(avatarDisplay);
                 byte[] hash = md.digest();
-                database.getReference("User").child(user.getUid()).child("md5Avatar").setValue(returnHex(hash));
+                avatar = returnHex(hash);
+                database.getReference("bubble").child(idBubble).child("md5Bubble").setValue(avatar);
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
             } catch (Exception e) {
@@ -183,9 +212,50 @@ public class MyBubbleActivity extends AppCompatActivity {
         }
 
         if(testUpdate == true) {
-            bubbleTalkSQLite.updateUser(user.getUid(), new String[]{pseudo, "", "", usePseudoStr, avatar});
+            bubbleTalkSQLite.updateBubble(idBubble, new String[]{name, description,avatar});
             Toast.makeText(this, "Modification sauvegardée !", Toast.LENGTH_SHORT).show();
-        }*/
+        }
     }
 
+    public void updateFirebaseAndPreferenceStorage(){
+
+        String encodedImage = Base64.encodeToString(avatarDisplay, Base64.DEFAULT);
+        SharedPreferences.Editor edit=shre.edit();
+        edit.putString("bubble_"+idBubble,encodedImage);
+        edit.commit();
+
+
+        // Points to the root reference
+
+        StorageReference storageRef = storage.getReferenceFromUrl("gs://bubbletalk-967fa.appspot.com");
+        StorageReference avatarFileRef = storageRef.child("bubble/"+idBubble+".jpg");
+
+
+        UploadTask uploadTask = avatarFileRef.putBytes(avatarDisplay);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+            }
+        });
+    }
+
+    public void deleteBubble() {
+        bubbleTalkSQLite.deleteMyBubble(idBubble);
+
+        Toast.makeText(this, "La Bubble a été éclatée !",Toast.LENGTH_SHORT).show();
+        Intent i = new Intent(this, BubbleActivity.class);
+        startActivity(i);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onStop();
+    }
 }

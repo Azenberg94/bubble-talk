@@ -91,7 +91,7 @@ public class CreateBubbleActivity extends AppCompatActivity {
         editTextNameCreateBubble = (EditText) findViewById(R.id.editTextNameCreateBubble);
         editTextDescriptionCreateBubble = (EditText) findViewById(R.id.editTextDescriptionCreateBubble);
         imageView = (ImageView) findViewById(R.id.imageViewCreateBubble);
-
+        imageView.setImageBitmap(null);
         Button buttonUpdateAvatarBubble = (Button) findViewById(R.id.buttonUpdateAvatarBubble);
         buttonUpdateAvatarBubble.setOnClickListener(new View.OnClickListener(){
             @Override
