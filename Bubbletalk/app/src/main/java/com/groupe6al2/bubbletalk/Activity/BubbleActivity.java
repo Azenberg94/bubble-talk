@@ -100,7 +100,6 @@ public class BubbleActivity extends AppCompatActivity {
                 Intent intent = new Intent(BubbleActivity.this, MyBubbleActivity.class);
                 intent.putExtra("id", idMyBubble[position]);
                 startActivity(intent);
-                finish();
             }
 
 

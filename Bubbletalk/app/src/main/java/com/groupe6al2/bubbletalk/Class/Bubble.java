@@ -26,6 +26,14 @@ public class Bubble {
         this.active = active;
     }
 
+    public Bubble(String id, String name, String description, String proprio, String avatarMd5) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.proprio = proprio;
+        this.avatarMd5 = avatarMd5;
+    }
+
     public String getId() {
         return id;
     }

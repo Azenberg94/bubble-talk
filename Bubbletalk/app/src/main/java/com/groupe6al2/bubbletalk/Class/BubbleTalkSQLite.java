@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class BubbleTalkSQLite extends SQLiteOpenHelper {
 
     
-    private static final int version = 16;
+    private static final int version = 20;
     private static final String Name_DataBase = "BubbleTalk";
     private static final String TABLE_USERS = "UserBubble";
     private static final String COL_IDU = "id";
@@ -164,7 +164,26 @@ public class BubbleTalkSQLite extends SQLiteOpenHelper {
             System.out.println(data[4].length());
             db.execSQL("UPDATE "+TABLE_USERS+" SET "+COL_AVATAR+ "='"+ data[4] + "' WHERE "+COL_ID_USER+"='"+id+"'");
         }
+    }
 
+    public void updateBubble(String id,String[] data){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        if(!data[0].isEmpty()){
+            db.execSQL("UPDATE "+TABLE_BUBBLE+" SET "+COL_NAME_BUBBLE+ "='"+data[0]+ "' WHERE "+COL_ID_BUBBLE+"='"+id+"'");
+        }
+        if(!data[1].isEmpty()){
+            db.execSQL("UPDATE "+TABLE_BUBBLE+" SET "+COL_DESCRIPTION_BUBBLE+ "='"+data[1]+ "' WHERE "+COL_ID_BUBBLE+"='"+id+"'");
+        }
+        if(!data[2].isEmpty()){
+            db.execSQL("UPDATE "+TABLE_BUBBLE+" SET "+COL_AVATAR_MD5_BUBBLE+ "='"+data[2]+ "' WHERE "+COL_ID_BUBBLE+"='"+id+"'");
+        }
+
+    }
+
+    public void deleteMyBubble(String id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM " + TABLE_BUBBLE + " WHERE "+COL_ID_BUBBLE+" = '"+id+"' ");
     }
 
    public void deleteTable(){

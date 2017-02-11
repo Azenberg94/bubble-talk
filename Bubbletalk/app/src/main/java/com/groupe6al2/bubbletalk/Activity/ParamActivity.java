@@ -90,7 +90,7 @@ public class ParamActivity extends AppCompatActivity {
         editTextPseudo.setText(currentUser.getPseudo());
 
         imageView = (ImageView) findViewById(R.id.imageView);
-
+        imageView.setImageBitmap(null);
         checkBox = (CheckBox) findViewById(R.id.checkBoxPseudo);
         //System.out.println("usePseudo : " + currentUser.getUsePseudo());
         if(currentUser.getUsePseudo()==true){
@@ -270,6 +270,7 @@ public class ParamActivity extends AppCompatActivity {
             }
         });
     }
+
     @Override
     protected void onSaveInstanceState(Bundle outState)
     {
