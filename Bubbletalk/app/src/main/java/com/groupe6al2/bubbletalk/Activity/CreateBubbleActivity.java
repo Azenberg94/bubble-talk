@@ -14,6 +14,7 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -64,6 +65,8 @@ public class CreateBubbleActivity extends AppCompatActivity {
     FirebaseUser user;
     FirebaseAuth auth;
 
+    SharedPreferences shre;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +74,9 @@ public class CreateBubbleActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         user= auth.getCurrentUser();
+
+        //Shared pref
+        shre = PreferenceManager.getDefaultSharedPreferences(this);
 
         network = ((ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
 
@@ -162,7 +168,7 @@ public class CreateBubbleActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            Bubble bubble = new Bubble( myId, editTextNameCreateBubble.getText().toString(), 1, myMd5);
+            Bubble bubble = new Bubble( myId, editTextNameCreateBubble.getText().toString(), editTextDescriptionCreateBubble.getText().toString(), user.getUid(), myMd5);
             BubbleTalkSQLite bubbleTalkSQLite = new BubbleTalkSQLite(this);
             bubbleTalkSQLite.addBubble(bubble);
 
@@ -175,6 +181,12 @@ public class CreateBubbleActivity extends AppCompatActivity {
 
 
     public void updateFirebaseStorage(String id){
+
+        String encodedImage = Base64.encodeToString(avatarBubbleDisplay, Base64.DEFAULT);
+        SharedPreferences.Editor edit=shre.edit();
+        edit.putString("bubble_"+id,encodedImage);
+        edit.commit();
+
 
         // Points to the root reference
         FirebaseStorage storage = FirebaseStorage.getInstance();

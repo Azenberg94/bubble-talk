@@ -1,9 +1,13 @@
 package com.groupe6al2.bubbletalk.Activity;
 
+import android.content.Intent;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -18,7 +22,10 @@ import com.groupe6al2.bubbletalk.Class.BubbleTalkSQLite;
 import com.groupe6al2.bubbletalk.Class.Utils;
 import com.groupe6al2.bubbletalk.R;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+
+
 
 public class BubbleActivity extends AppCompatActivity {
 
@@ -42,6 +49,9 @@ public class BubbleActivity extends AppCompatActivity {
     ArrayList<String> listItemsMyBubble=new ArrayList<String>();
     ArrayList<String> listItemsProche=new ArrayList<String>();
     ArrayList<String> listItemsHisto=new ArrayList<String>();
+
+    //Tab for id ONCLIC
+    String[] idMyBubble;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,15 +80,31 @@ public class BubbleActivity extends AppCompatActivity {
     }
 
     private void refreshMyBubble() {
-        ArrayList<Bubble> bubbleArrayList = bubbleTalkSQLite.getMyBubbles();
+        ArrayList<Bubble> bubbleArrayList = bubbleTalkSQLite.getMyBubbles(user.getUid());
+
+        idMyBubble = new String[bubbleArrayList.size()];
+
+
         for(int i=0 ; i<bubbleArrayList.size(); i++){
             listItemsMyBubble.add(bubbleArrayList.get(i).getName());
+            idMyBubble[i] = bubbleArrayList.get(i).getId();
         }
         adapterMyBubble=new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1,
                 listItemsMyBubble);
         listViewMyBubble.setAdapter(adapterMyBubble);
         adapterMyBubble.notifyDataSetChanged();
+        listViewMyBubble.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(BubbleActivity.this, MyBubbleActivity.class);
+                intent.putExtra("id", idMyBubble[position]);
+                startActivity(intent);
+                finish();
+            }
+
+
+        });
     }
 
     private void refreshBubbleProche() {
@@ -94,7 +120,8 @@ public class BubbleActivity extends AppCompatActivity {
         adapterProche.notifyDataSetChanged();
     }
 
-    private void refreshHisto() {
+    private void refreshHisto(){
+
     }
 
 
