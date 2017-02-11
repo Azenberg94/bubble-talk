@@ -51,8 +51,8 @@ public class BubbleTalkSQLite extends SQLiteOpenHelper {
         );
         db.execSQL(
                 "create table BubbleBubble " +
-                        "("+COL_IDB+" interger primary key,"+COL_ID_BUBBLE+" text, "+COL_NAME_BUBBLE+" text,"+COL_PROPRIO+" text,"+COL_AVATAR_MD5_BUBBLE+" text, "+COL_LAT_BUBBLE+" text,"+COL_LONG_BUBBLE+" text, "+COL_ACTIVE_BUBBLE+" text)"
-                        "("+COL_IDB+" interger primary key,"+COL_ID_BUBBLE+" text, "+COL_NAME_BUBBLE+" text, "+COL_DESCRIPTION_BUBBLE+" text,"+COL_PROPRIO+" text null,"+COL_AVATAR_MD5_BUBBLE+" text)"
+                        "("+COL_IDB+" interger primary key,"+COL_ID_BUBBLE+" text, "+COL_NAME_BUBBLE+" text,"+COL_DESCRIPTION_BUBBLE+" text,"+COL_PROPRIO+" text,"+COL_AVATAR_MD5_BUBBLE+" text, "+COL_LAT_BUBBLE+" text,"+COL_LONG_BUBBLE+" text, "+COL_ACTIVE_BUBBLE+" text)"
+
         );
     }
 
@@ -116,14 +116,10 @@ public class BubbleTalkSQLite extends SQLiteOpenHelper {
     public ArrayList<Bubble> getMyBubbles(String id){
         ArrayList<Bubble> bubbleArrayList = new ArrayList<>();
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM "+TABLE_BUBBLE +" WHERE proprio = "+id, null);
-        if (cursor.moveToFirst()) {
-            while (cursor.isAfterLast() == false) {
-                bubbleArrayList.add(new Bubble(cursor.getString(cursor.getColumnIndex(COL_ID_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_NAME_BUBBLE)), id, cursor.getString(cursor.getColumnIndex(COL_AVATAR_MD5_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_LAT_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_LONG_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_ACTIVE_BUBBLE))));
         Cursor cursor = db.rawQuery("SELECT * FROM "+TABLE_BUBBLE +" WHERE proprio = '"+id+"' ORDER BY name",null);
         if (cursor.moveToFirst()) {
             while (cursor.isAfterLast() == false) {
-                bubbleArrayList.add(new Bubble(cursor.getString(cursor.getColumnIndex(COL_ID_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_NAME_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_DESCRIPTION_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_PROPRIO)), cursor.getString(cursor.getColumnIndex(COL_AVATAR_MD5_BUBBLE))));
+                bubbleArrayList.add(new Bubble(cursor.getString(cursor.getColumnIndex(COL_ID_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_NAME_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_DESCRIPTION_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_PROPRIO)), cursor.getString(cursor.getColumnIndex(COL_AVATAR_MD5_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_LAT_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_LONG_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_ACTIVE_BUBBLE))));
                 cursor.moveToNext();
             }
         }
@@ -136,7 +132,7 @@ public class BubbleTalkSQLite extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("SELECT * FROM "+TABLE_BUBBLE +" WHERE idBubble = '"+id+"'",null);
         if (cursor.moveToFirst()) {
             while (cursor.isAfterLast() == false) {
-                bubbleArrayList.add(new Bubble(cursor.getString(cursor.getColumnIndex(COL_ID_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_NAME_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_DESCRIPTION_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_PROPRIO)), cursor.getString(cursor.getColumnIndex(COL_AVATAR_MD5_BUBBLE))));
+                bubbleArrayList.add(new Bubble(cursor.getString(cursor.getColumnIndex(COL_ID_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_NAME_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_DESCRIPTION_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_PROPRIO)), cursor.getString(cursor.getColumnIndex(COL_AVATAR_MD5_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_LAT_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_LONG_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_ACTIVE_BUBBLE))));
                 cursor.moveToNext();
             }
         }
