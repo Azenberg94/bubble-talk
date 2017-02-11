@@ -1,4 +1,4 @@
-﻿package com.groupe6al2.bubbletalk.Class;
+package com.groupe6al2.bubbletalk.Class;
 
 /**
  * Created by Loïc on 10/02/2017.
@@ -24,6 +24,14 @@ public class Bubble {
         this.latitude = latitude;
         this.longitude = longitude;
         this.active = active;
+    }
+
+    public Bubble(String id, String name, String description, String proprio, String avatarMd5) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.proprio = proprio;
+        this.avatarMd5 = avatarMd5;
     }
 
     public String getId() {

@@ -127,7 +127,8 @@ public class MyBubbleActivity extends AppCompatActivity {
     }
 
     private void goNearbyGO() {
-
+        Intent i = new Intent(this, NearbyActivity.class);
+        startActivity(i);
     }
 
 

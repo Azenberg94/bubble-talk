@@ -168,7 +168,7 @@ public class CreateBubbleActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            Bubble bubble = new Bubble( myId, editTextNameCreateBubble.getText().toString(), editTextDescriptionCreateBubble.getText().toString(), user.getUid(), myMd5);
+            Bubble bubble = new Bubble(myId, editTextNameCreateBubble.getText().toString(), editTextDescriptionCreateBubble.getText().toString(), user.getUid(), myMd5);
             BubbleTalkSQLite bubbleTalkSQLite = new BubbleTalkSQLite(this);
             bubbleTalkSQLite.addBubble(bubble);
 
