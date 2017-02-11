@@ -61,6 +61,7 @@ public class CreateBubbleActivity extends AppCompatActivity {
     Utils utils = new Utils();
     double longitude;
     double latitude;
+    int active;
 
     FirebaseUser user;
     FirebaseAuth auth;
@@ -168,7 +169,7 @@ public class CreateBubbleActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            Bubble bubble = new Bubble( myId, editTextNameCreateBubble.getText().toString(), editTextDescriptionCreateBubble.getText().toString(), user.getUid(), myMd5);
+            Bubble bubble = new Bubble( myId, editTextNameCreateBubble.getText().toString(), editTextDescriptionCreateBubble.getText().toString(), user.getUid(), myMd5, String.valueOf(latitude), String.valueOf(longitude), String.valueOf(active));
             BubbleTalkSQLite bubbleTalkSQLite = new BubbleTalkSQLite(this);
             bubbleTalkSQLite.addBubble(bubble);
 

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -19,7 +20,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.groupe6al2.bubbletalk.R;
@@ -78,7 +81,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
         }
-
+        addBubbleOnCurrentPosition("lol c le test");
 
         // Add a marker in Sydney and move the camera
         /*LatLng sydney = new LatLng(-34, 151);
@@ -86,6 +89,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
 
 
+    }
+    public void addBubbleOnCurrentPosition(String bubblename){
+
+        //LatLng bubbleLocation = new LatLng(latitude, longitude);
+        Location location = new Location("");
+        LatLng bubbleLocation = new LatLng(location.getLatitude(), location.getLongitude());
+        //mMap.addMarker(new MarkerOptions().position(bubbleLocation).title(bubblename).icon(BitmapDescriptorFactory.fromResource(R.drawable.bubble_icon).zzIy()));
+        mMap.addCircle(new CircleOptions()
+                .center(bubbleLocation)
+                .radius(50)
+                .strokeColor(Color.GRAY)
+                .fillColor(Color.TRANSPARENT)
+                );
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(bubbleLocation, 16.0f));
     }
 
 
