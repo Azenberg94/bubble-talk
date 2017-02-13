@@ -1,33 +1,29 @@
 package com.groupe6al2.bubbletalk.Activity;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.FragmentTransaction;
+import android.appwidget.AppWidgetManager;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.groupe6al2.bubbletalk.Class.Bubble;
 import com.groupe6al2.bubbletalk.Class.BubbleTalkSQLite;
 import com.groupe6al2.bubbletalk.R;
+import com.groupe6al2.bubbletalk.Widget.BubbleOnOff;
 
 import java.util.ArrayList;
 
@@ -95,8 +91,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Location location = new Location("");
         LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 16.0f));
+
+        Intent intent = new Intent(BubbleOnOff.STATE_CHANGE);
+        intent.putExtra("State", true);
+        Log.i("onCall", "----------------------------------------------------------------------------1");
+        getApplicationContext().sendBroadcast(intent);
+
+
+
         ArrayList<Bubble> bubbles = bubbleTalkSQLite.getAllActiveBubbles();
         addBubbles(bubbles);
+
+
     }
     public void addBubbles(ArrayList<Bubble> bubbles){
         int strokeColor;

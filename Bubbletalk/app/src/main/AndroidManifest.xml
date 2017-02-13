@@ -37,14 +37,15 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".Widget.NearbyOnOff">
+        <receiver android:name=".Widget.BubbleOnOff">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="BubbleOnOff.STATE_CHANGED" />
             </intent-filter>
 
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/nearby_on_off_info" />
+                android:resource="@xml/bubble_on_off_info" />
         </receiver>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -68,17 +69,8 @@
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <receiver android:name=".Widget.NearbyOnOff">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
 
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/nearby_on_off_info" />
-        </receiver>
 
-        <activity android:name=".Activity.NearbyActivity" />
         <activity android:name=".Activity.BubbleActivity" />
         <activity android:name=".Activity.MyBubbleActivity" />
         <activity android:name=".Activity.ChatActivity"></activity>

@@ -7,41 +7,32 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.RemoteViews;
-import com.groupe6al2.bubbletalk.R;
-import com.groupe6al2.bubbletalk.Activity.NearbyActivity;
 
-import android.app.Activity;
-import android.app.PendingIntent;
-import android.appwidget.AppWidgetManager;
-import android.appwidget.AppWidgetProvider;
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.util.Log;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.RemoteViews;
+import com.groupe6al2.bubbletalk.Activity.BubbleActivity;
+import com.groupe6al2.bubbletalk.R;
 
 /**
  * Implementation of App Widget functionality.
  */
-public class NearbyOnOff extends AppWidgetProvider {
+public class BubbleOnOff extends AppWidgetProvider {
 
     private static final String MY_ON_CLICK = "myOnClickTag";
+    public static final String STATE_CHANGE = "BubbleOnOff.STATE_CHANGED";
+    private static int myAppWidgetId;
     private static boolean isOn = false;
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
         Log.i("updateAppWidget", "1");
         CharSequence widgetText = context.getString(R.string.appwidget_text);
-
-        Intent intent = new Intent(context, NearbyOnOff.class);
+        myAppWidgetId = appWidgetId;
+        Intent intent = new Intent(context, BubbleOnOff.class);
         intent.putExtra("appWidgetId", appWidgetId);
         intent.setAction(MY_ON_CLICK);
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         // Construct the RemoteViews object
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.nearby_on_off);
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.bubble_on_off);
         //views.setTextViewText(R.id.appwidget_text, widgetText);
 
         views.setOnClickPendingIntent(R.id.onoffButton, pendingIntent);
@@ -50,26 +41,25 @@ public class NearbyOnOff extends AppWidgetProvider {
     }
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.i("onReceive", "----------------------------------------------------------------------------1");
         super.onReceive(context, intent);//add this line
+        if (STATE_CHANGE.equals(intent.getAction())) {
+            isOn =  intent.getExtras().getBoolean("State");
 
-        if (MY_ON_CLICK.equals(intent.getAction())) {
-            this.isOn = !this.isOn;
-            Log.i("updateNearbyState", String.valueOf(isOn));
-            int appWidgetId = intent.getIntExtra("appWidgetId", -1);
-            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.nearby_on_off);
+            Log.i("stateOk", "----------------------------------------------------------------------------1");
+
+
+            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.bubble_on_off);
             if(isOn){
+                Log.i("on-------------", String.valueOf(myAppWidgetId));
                 views.setImageViewResource(R.id.onoffButton, R.drawable.on);
                 AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-                appWidgetManager.updateAppWidget(appWidgetId, views);
-                Intent intentStartApp = new Intent(context.getApplicationContext(), NearbyActivity.class);
-                intentStartApp.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intentStartApp);
+                appWidgetManager.updateAppWidget(myAppWidgetId, views);
             }else {
+                Log.i("off", "----------------------------------------------------------------------------1");
                 views.setImageViewResource(R.id.onoffButton, R.drawable.off);
                 AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-                appWidgetManager.updateAppWidget(appWidgetId, views);
-                android.os.Process.killProcess(android.os.Process.myPid());
-                System.exit(1);
+                appWidgetManager.updateAppWidget(myAppWidgetId, views);
             }
         }
     }
