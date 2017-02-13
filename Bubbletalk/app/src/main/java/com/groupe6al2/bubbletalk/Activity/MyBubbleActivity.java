@@ -1,16 +1,20 @@
 package com.groupe6al2.bubbletalk.Activity;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -62,6 +66,7 @@ public class MyBubbleActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        System.out.println("test");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_bubble);
 
@@ -81,19 +86,18 @@ public class MyBubbleActivity extends AppCompatActivity {
         editTextMyBubbleDescription.setText(bubble.getDescription());
 
         imageView = (ImageView) findViewById(R.id.imageViewMyBubble);
-        if(savedInstanceState != null)
-        {
-            if(savedInstanceState.getByteArray("myAvatar").length>0) {
+        if (savedInstanceState != null) {
+            if (savedInstanceState.getByteArray("myAvatar").length > 0) {
                 avatarDisplay = savedInstanceState.getByteArray("myAvatar");
             }
         }
-        if (avatarDisplay.length>0){
-            Bitmap bitmap = BitmapFactory.decodeByteArray(avatarDisplay,0,avatarDisplay.length);
+        if (avatarDisplay.length > 0) {
+            Bitmap bitmap = BitmapFactory.decodeByteArray(avatarDisplay, 0, avatarDisplay.length);
             imageView.setImageBitmap(null);
             imageView.setImageBitmap(bitmap);
-        }else if(!shre.getString("bubble_"+idBubble,"").equals("")){
-            avatarBefore = Base64.decode(shre.getString("bubble_"+idBubble,""), Base64.DEFAULT);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(avatarBefore,0,avatarBefore.length);
+        } else if (!shre.getString("bubble_" + idBubble, "").equals("")) {
+            avatarBefore = Base64.decode(shre.getString("bubble_" + idBubble, ""), Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(avatarBefore, 0, avatarBefore.length);
             imageView.setImageBitmap(null);
             imageView.setImageBitmap(bitmap);
         }
@@ -120,7 +124,7 @@ public class MyBubbleActivity extends AppCompatActivity {
         });
 
         Button buttonDelete = (Button) findViewById(R.id.buttonDeleteMyBubble);
-        buttonDelete.setOnClickListener(new View.OnClickListener(){
+        buttonDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AlertDialog alertDialog = new AlertDialog.Builder(v.getContext())
@@ -140,9 +144,9 @@ public class MyBubbleActivity extends AppCompatActivity {
         buttonActivate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(buttonActivate.getText().equals("Stopper la bubble")){
+                if (buttonActivate.getText().equals("Stopper la bubble")) {
                     buttonActivate.setText("Démarrer la bubble");
-                }else{
+                } else {
                     buttonActivate.setText("Stopper la bubble");
                 }
                 activateBubble();
@@ -164,12 +168,13 @@ public class MyBubbleActivity extends AppCompatActivity {
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                if(snapshot.child("etat").getValue().equals("true")){
+                if (snapshot.child("etat").getValue().equals("true")) {
                     buttonActivate.setText("Stopper la bubble");
-                }else{
+                } else {
                     buttonActivate.setText("Démarrer la bubble");
                 }
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
@@ -180,11 +185,27 @@ public class MyBubbleActivity extends AppCompatActivity {
     }
 
     private void activateBubble() {
-        Location location = new Location("");
-        LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-        System.out.println("latitude : " + location.getLongitude());
+        double latitude = 0;
+        double longitude = 0;
+        Location location = null;
+        LocationManager mlocManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+        if (mlocManager != null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                System.out.println("test");
+                return;
+            }
+            location = mlocManager
+                    .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            if (location != null) {
+                latitude = location.getLatitude();
+                longitude = location.getLongitude();
+            }
+        }
+
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference myRef = database.getReference("bubble").child(idBubble);
+        final double finalLongitude = longitude;
+        final double finalLatitude = latitude;
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -195,6 +216,8 @@ public class MyBubbleActivity extends AppCompatActivity {
                 }else{
                     intent.putExtra("State", true);
                     myRef.child("etat").setValue("true");
+                    myRef.child("longitude").setValue(String.valueOf(finalLongitude));
+                    myRef.child("latitude").setValue(String.valueOf(finalLatitude));
                 }
                 getApplicationContext().sendBroadcast(intent);
             }
@@ -203,7 +226,6 @@ public class MyBubbleActivity extends AppCompatActivity {
 
             }
         });
-
 
     }
 
@@ -338,6 +360,8 @@ public class MyBubbleActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+
+        imageView.setImageBitmap(null);
         super.onStop();
     }
 
@@ -351,4 +375,6 @@ public class MyBubbleActivity extends AppCompatActivity {
         outState.putByteArray("myAvatar", avatarDisplay);
 
     }
+
+
 }

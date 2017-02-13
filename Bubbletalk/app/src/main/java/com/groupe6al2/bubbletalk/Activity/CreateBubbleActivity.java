@@ -165,11 +165,14 @@ public class CreateBubbleActivity extends AppCompatActivity {
             databaseReference.child("description").setValue(editTextDescriptionCreateBubble.getText().toString());
             databaseReference.child("proprio").setValue(user.getUid());
             databaseReference.child("etat").setValue("false");
+            databaseReference.child("longitude").setValue("0");
+            databaseReference.child("latitude").setValue("0");
 
             String myId = databaseReference.getKey();
             updateFirebaseStorage(myId);
             String myMd5 ="";
             MessageDigest md = null;
+
             try {
                 md = MessageDigest.getInstance("MD5");
                 md.update(avatarBubbleDisplay);

@@ -1,10 +1,15 @@
 package com.groupe6al2.bubbletalk.Activity;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
+import android.location.LocationManager;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -54,7 +59,8 @@ public class BubbleActivity extends AppCompatActivity {
     BubbleTalkSQLite bubbleTalkSQLite;
     ListView listViewMyBubble;
     ListView listViewProche;
-
+    CustomList adapter2 = null;
+    CustomList adapter1= null;
     SharedPreferences shre;
 
     //DEFINING A STRING ADAPTER WHICH WILL HANDLE THE DATA OF THE LISTVIEW
@@ -72,7 +78,6 @@ public class BubbleActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bubble);
 
@@ -96,11 +101,35 @@ public class BubbleActivity extends AppCompatActivity {
         final DatabaseReference myRef = database.getReference("bubble");
         b = new ArrayList<>();
 
+
+        double latitude = 0;
+        double longitude = 0;
+        Location location = null;
+        LocationManager mlocManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+        if (mlocManager != null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                System.out.println("test");
+                return;
+            }
+            location = mlocManager
+                    .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            if (location != null) {
+                latitude = location.getLatitude();
+                longitude = location.getLongitude();
+            }
+        }
+
+
         Query query =myRef.orderByChild("name");
+        final double finalLongitude = longitude;
+        final double finalLatitude = latitude;
         query.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 if (dataSnapshot.getValue(Bubble.class).getEtat().equals("true")) {
+
+                    double testDistance = Utils.Distance(Double.parseDouble(dataSnapshot.getValue(Bubble.class).getLatitude()), Double.parseDouble(dataSnapshot.getValue(Bubble.class).getLongitude()), finalLatitude, finalLongitude);
+                    System.out.println("myDist = " + testDistance);
                     b.add(dataSnapshot.getValue(Bubble.class));
                     b.get(b.size() - 1).setId(dataSnapshot.getKey());
                     refreshBubbleProche();
@@ -150,9 +179,9 @@ public class BubbleActivity extends AppCompatActivity {
             idMyBubble[i] = bubbleArrayList.get(i).getId();
             image[i] = shre.getString("bubble_" + bubbleArrayList.get(i).getId(), "");
         }
-        CustomList adapter = new
+        adapter1 = new
                 CustomList(BubbleActivity.this, nameBubble, image);
-                listViewMyBubble.setAdapter(adapter);
+                listViewMyBubble.setAdapter(adapter1);
 
         listViewMyBubble.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -178,9 +207,9 @@ public class BubbleActivity extends AppCompatActivity {
             image[0]="";
 
 
-            CustomList adapter = new
+            CustomList adapter2 = new
                     CustomList(BubbleActivity.this, nameBubble, image);
-            listViewProche.setAdapter(adapter);
+            listViewProche.setAdapter(adapter2);
 
         }else{
 
@@ -194,9 +223,9 @@ public class BubbleActivity extends AppCompatActivity {
                 image[i]="";
 
             }
-            CustomList adapter = new
+            adapter2 = new
                     CustomList(BubbleActivity.this, nameBubble, image);
-            listViewProche.setAdapter(adapter);
+            listViewProche.setAdapter(adapter2);
             listViewProche.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -210,6 +239,10 @@ public class BubbleActivity extends AppCompatActivity {
     }
 
 
-
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        listViewMyBubble.setAdapter(null);
+        listViewProche.setAdapter(null);
+    }
 }

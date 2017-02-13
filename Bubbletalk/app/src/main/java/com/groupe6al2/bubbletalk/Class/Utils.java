@@ -77,4 +77,24 @@ public class Utils {
         }
         return true;
     }
+
+    //Conversion des degrés en radian
+    public static double convertRad(double input){
+        return (Math.PI * input)/180;
+    }
+
+    public static double Distance(double lat_a_degre, double lon_a_degre, double lat_b_degre, double lon_b_degre){
+
+        int R = 6378000; //Rayon de la terre en mètre
+
+        double lat_a = convertRad(lat_a_degre);
+        double lon_a = convertRad(lon_a_degre);
+        double lat_b = convertRad(lat_b_degre);
+        double lon_b = convertRad(lon_b_degre);
+
+        double d =  (Math.PI/2 - Math.asin( Math.sin(lat_b) * Math.sin(lat_a) + Math.cos(lon_b - lon_a) * Math.cos(lat_b) * Math.cos(lat_a)));
+
+        return d;
+    }
+
 }
