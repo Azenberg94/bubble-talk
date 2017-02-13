@@ -98,7 +98,7 @@
                 android:text="Démarrer la Bubble"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/buttonMyBubbleNearby"
+                android:id="@+id/buttonMyBubbleActivate"
                 android:layout_weight="1"
                 tools:ignore="ButtonStyle,HardcodedText" />
 

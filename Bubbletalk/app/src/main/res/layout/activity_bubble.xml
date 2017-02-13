@@ -11,7 +11,8 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:weightSum="1">
 
         <TextView
             android:text="Mes Bubbles"
@@ -23,7 +24,8 @@
             android:layout_width="match_parent"
             android:layout_height="125dp"
             android:headerDividersEnabled="true"
-            android:id="@+id/listViewMyBubble" />
+            android:id="@+id/listViewMyBubble"
+            android:layout_weight="0.74" />
 
         <TextView
             android:text="Bubble Proche"
@@ -33,21 +35,10 @@
 
         <ListView
             android:layout_width="match_parent"
-            android:layout_height="121dp"
+            android:layout_height="194dp"
             android:id="@+id/listViewProche"
             android:headerDividersEnabled="true" />
 
-        <TextView
-            android:text="Historique"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/textView4" />
-
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="129dp"
-            android:id="@+id/listViewHisto"
-            android:headerDividersEnabled="true" />
     </LinearLayout>
 
 </RelativeLayout>

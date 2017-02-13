@@ -1,10 +1,15 @@
 package com.groupe6al2.bubbletalk.Activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -19,6 +24,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.groupe6al2.bubbletalk.Class.Bubble;
 import com.groupe6al2.bubbletalk.Class.BubbleTalkSQLite;
+import com.groupe6al2.bubbletalk.Class.CustomList;
 import com.groupe6al2.bubbletalk.Class.Utils;
 import com.groupe6al2.bubbletalk.R;
 
@@ -37,24 +43,24 @@ public class BubbleActivity extends AppCompatActivity {
     StorageReference storageRef;
     BubbleTalkSQLite bubbleTalkSQLite;
     ListView listViewMyBubble;
-    ListView listViewHisto;
     ListView listViewProche;
+
+    SharedPreferences shre;
 
     //DEFINING A STRING ADAPTER WHICH WILL HANDLE THE DATA OF THE LISTVIEW
     ArrayAdapter<String> adapterMyBubble;
     ArrayAdapter<String> adapterProche;
-    ArrayAdapter<String> adapterHisto;
 
     //LIST OF ARRAY STRINGS WHICH WILL SERVE AS LIST ITEMS
     ArrayList<String> listItemsMyBubble=new ArrayList<String>();
     ArrayList<String> listItemsProche=new ArrayList<String>();
-    ArrayList<String> listItemsHisto=new ArrayList<String>();
 
     //Tab for id ONCLIC
     String[] idMyBubble;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bubble);
 
@@ -71,11 +77,12 @@ public class BubbleActivity extends AppCompatActivity {
 
         listViewMyBubble = (ListView) findViewById(R.id.listViewMyBubble);
         listViewProche = (ListView) findViewById(R.id.listViewProche);
-        listViewHisto = (ListView) findViewById(R.id.listViewHisto);
+
+        //Shared pref
+        shre = PreferenceManager.getDefaultSharedPreferences(this);
 
         refreshMyBubble();
         refreshBubbleProche();
-        refreshHisto();
 
     }
 
@@ -84,7 +91,27 @@ public class BubbleActivity extends AppCompatActivity {
 
         idMyBubble = new String[bubbleArrayList.size()];
 
+        String[] nameBubble = new String[bubbleArrayList.size()];
+        String[] image = new String[bubbleArrayList.size()];
+        for(int i=0 ; i<bubbleArrayList.size(); i++){
+            nameBubble[i] = bubbleArrayList.get(i).getName();
+            idMyBubble[i] = bubbleArrayList.get(i).getId();
+            image[i] = shre.getString("bubble_" + bubbleArrayList.get(i).getId(), "");
+        }
+        CustomList adapter = new
+                CustomList(BubbleActivity.this, nameBubble, image);
+                listViewMyBubble.setAdapter(adapter);
 
+        listViewMyBubble.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(BubbleActivity.this, MyBubbleActivity.class);
+                intent.putExtra("id", idMyBubble[position]);
+                startActivity(intent);
+            }
+        });
+
+        /*
         for(int i=0 ; i<bubbleArrayList.size(); i++){
             listItemsMyBubble.add(bubbleArrayList.get(i).getName());
             idMyBubble[i] = bubbleArrayList.get(i).getId();
@@ -103,7 +130,7 @@ public class BubbleActivity extends AppCompatActivity {
             }
 
 
-        });
+        });*/
     }
 
     private void refreshBubbleProche() {
@@ -119,9 +146,7 @@ public class BubbleActivity extends AppCompatActivity {
         adapterProche.notifyDataSetChanged();
     }
 
-    private void refreshHisto(){
 
-    }
 
 
 }

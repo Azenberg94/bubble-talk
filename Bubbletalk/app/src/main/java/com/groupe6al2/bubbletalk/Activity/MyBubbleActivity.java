@@ -48,6 +48,7 @@ public class MyBubbleActivity extends AppCompatActivity {
     ImageView imageView;
     SharedPreferences shre;
     Bubble bubble;
+    Button buttonActivate;
 
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReferenceFromUrl("gs://bubbletalk-967fa.appspot.com");
@@ -116,11 +117,11 @@ public class MyBubbleActivity extends AppCompatActivity {
             }
         });
 
-        Button buttonMyBubbleNearby = (Button) findViewById(R.id.buttonMyBubbleNearby);
-        buttonMyBubbleNearby.setOnClickListener(new View.OnClickListener() {
+        buttonActivate = (Button) findViewById(R.id.buttonMyBubbleActivate);
+        buttonActivate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                goNearbyGO();
+                activateBubble();
             }
         });
 
@@ -135,9 +136,8 @@ public class MyBubbleActivity extends AppCompatActivity {
 
     }
 
-    private void goNearbyGO() {
-        Intent i = new Intent(this, NearbyActivity.class);
-        startActivity(i);
+    private void activateBubble() {
+
     }
 
     private void goToBubble() {
@@ -263,10 +263,10 @@ public class MyBubbleActivity extends AppCompatActivity {
 
     public void deleteBubble() {
         bubbleTalkSQLite.deleteMyBubble(idBubble);
-
         Toast.makeText(this, "La Bubble a été éclatée !",Toast.LENGTH_SHORT).show();
         Intent i = new Intent(this, BubbleActivity.class);
         startActivity(i);
+        finish();
     }
 
     @Override
