@@ -42,6 +42,7 @@ import com.groupe6al2.bubbletalk.R;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.OnConnectionFailedListener {
 
+    public static final String USER_ID = "USER_ID";
     FirebaseUser user;
     Button buttonDeco;
     FirebaseAuth auth;
@@ -174,6 +175,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
         } else if (id == R.id.nav_see_map){
             Intent intent = new Intent(MainActivity.this, MapsActivity.class);
+            intent.putExtra(USER_ID, uid);
             startActivity(intent);
         } else if (id == R.id.nav_parametre) {
             if(Utils.isConnectedInternet(this)==true) {

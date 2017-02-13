@@ -201,5 +201,17 @@ public class BubbleTalkSQLite extends SQLiteOpenHelper {
         cursor.close();
         return cnt;
     }
+    public ArrayList<Bubble> getAllActiveBubbles(){
+        ArrayList<Bubble> bubbleArrayList = new ArrayList<>();
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM "+TABLE_BUBBLE +" WHERE isActive=1",null);
+        if (cursor.moveToFirst()) {
+            while (cursor.isAfterLast() == false) {
+                bubbleArrayList.add(new Bubble(cursor.getString(cursor.getColumnIndex(COL_ID_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_NAME_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_DESCRIPTION_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_PROPRIO)), cursor.getString(cursor.getColumnIndex(COL_AVATAR_MD5_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_LAT_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_LONG_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_ACTIVE_BUBBLE))));
+                cursor.moveToNext();
+            }
+        }
+        return bubbleArrayList;
+    }
 
 }

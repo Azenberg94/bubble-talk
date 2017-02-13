@@ -1,4 +1,4 @@
-﻿package com.groupe6al2.bubbletalk.Activity;
+package com.groupe6al2.bubbletalk.Activity;
 
 import android.Manifest;
 import android.content.Context;

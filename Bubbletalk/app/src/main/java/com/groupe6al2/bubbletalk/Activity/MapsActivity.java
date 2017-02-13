@@ -25,22 +25,28 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.groupe6al2.bubbletalk.Class.Bubble;
+import com.groupe6al2.bubbletalk.Class.BubbleTalkSQLite;
 import com.groupe6al2.bubbletalk.R;
+
+import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     GoogleMap mMap;
     MapFragment mMapFragment;
     FragmentTransaction fragmentTransaction;
+    BubbleTalkSQLite bubbleTalkSQLite;
+    String userid;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        userid = getIntent().getStringExtra("id");
 
-
-
+        bubbleTalkSQLite = new BubbleTalkSQLite(this);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -81,28 +87,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
         }
-        addBubbleOnCurrentPosition("lol c le test");
 
         // Add a marker in Sydney and move the camera
         /*LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
-
-
-    }
-    public void addBubbleOnCurrentPosition(String bubblename){
-
-        //LatLng bubbleLocation = new LatLng(latitude, longitude);
         Location location = new Location("");
-        LatLng bubbleLocation = new LatLng(location.getLatitude(), location.getLongitude());
-        //mMap.addMarker(new MarkerOptions().position(bubbleLocation).title(bubblename).icon(BitmapDescriptorFactory.fromResource(R.drawable.bubble_icon).zzIy()));
-        mMap.addCircle(new CircleOptions()
-                .center(bubbleLocation)
-                .radius(50)
-                .strokeColor(Color.GRAY)
-                .fillColor(Color.TRANSPARENT)
-                );
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(bubbleLocation, 16.0f));
+        LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 16.0f));
+        ArrayList<Bubble> bubbles = bubbleTalkSQLite.getAllActiveBubbles();
+        addBubbles(bubbles);
+    }
+    public void addBubbles(ArrayList<Bubble> bubbles){
+        int strokeColor;
+        LatLng bubbleLocation;
+        for (Bubble bubble : bubbles)
+        {
+            bubbleLocation = new LatLng(Double.parseDouble(bubble.getLatitude()), Double.parseDouble(bubble.getLongitude()));
+            if(bubble.getProprio()==userid){
+                strokeColor = Color.BLUE;
+            }else strokeColor = Color.GRAY;
+            mMap.addCircle(new CircleOptions()
+                    .center(bubbleLocation)
+                    .radius(50)
+                    .strokeColor(strokeColor)
+                    .fillColor(Color.TRANSPARENT)
+                    );
+        }
     }
 
 
