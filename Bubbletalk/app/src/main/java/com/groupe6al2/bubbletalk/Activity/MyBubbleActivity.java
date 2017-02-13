@@ -35,6 +35,7 @@ import com.google.firebase.storage.UploadTask;
 import com.groupe6al2.bubbletalk.Class.Bubble;
 import com.groupe6al2.bubbletalk.Class.BubbleTalkSQLite;
 import com.groupe6al2.bubbletalk.R;
+import com.groupe6al2.bubbletalk.Widget.BubbleOnOff;
 
 import java.io.ByteArrayOutputStream;
 import java.security.MessageDigest;
