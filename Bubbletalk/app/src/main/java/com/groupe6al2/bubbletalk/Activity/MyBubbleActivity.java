@@ -79,12 +79,24 @@ public class MyBubbleActivity extends AppCompatActivity {
         editTextMyBubbleDescription = (EditText) findViewById(R.id.editTextMyBubbleDescription);
         editTextMyBubbleDescription.setText(bubble.getDescription());
 
-
-        avatarBefore = Base64.decode(shre.getString("bubble_" + bubble.getId(), ""), Base64.DEFAULT);
-        Bitmap bitmap = BitmapFactory.decodeByteArray(avatarBefore, 0, avatarBefore.length);
         imageView = (ImageView) findViewById(R.id.imageViewMyBubble);
-        imageView.setImageBitmap(null);
-        imageView.setImageBitmap(bitmap);
+        if(savedInstanceState != null)
+        {
+            if(savedInstanceState.getByteArray("myAvatar").length>0) {
+                avatarDisplay = savedInstanceState.getByteArray("myAvatar");
+            }
+        }
+        if (avatarDisplay.length>0){
+            Bitmap bitmap = BitmapFactory.decodeByteArray(avatarDisplay,0,avatarDisplay.length);
+            imageView.setImageBitmap(null);
+            imageView.setImageBitmap(bitmap);
+        }else if(!shre.getString("bubble_"+idBubble,"").equals("")){
+            avatarBefore = Base64.decode(shre.getString("bubble_"+idBubble,""), Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(avatarBefore,0,avatarBefore.length);
+            imageView.setImageBitmap(null);
+            imageView.setImageBitmap(bitmap);
+        }
+
 
         Button buttonUpdateAvatar = (Button) findViewById(R.id.buttonUpdateAvatarMyBubble);
         buttonUpdateAvatar.setOnClickListener(new View.OnClickListener() {
@@ -127,6 +139,11 @@ public class MyBubbleActivity extends AppCompatActivity {
         buttonActivate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(buttonActivate.getText().equals("Stopper la bubble")){
+                    buttonActivate.setText("Démarrer la bubble");
+                }else{
+                    buttonActivate.setText("Stopper la bubble");
+                }
                 activateBubble();
             }
         });
@@ -140,23 +157,45 @@ public class MyBubbleActivity extends AppCompatActivity {
             }
         });
 
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference myRef = database.getReference("bubble").child(idBubble);
+        //to initialize my button
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if(snapshot.child("etat").getValue().equals("true")){
+                    buttonActivate.setText("Stopper la bubble");
+                }else{
+                    buttonActivate.setText("Démarrer la bubble");
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
     }
 
     private void activateBubble() {
-        /*Location location = new Location("");
-        LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());*/
+        Location location = new Location("");
+        LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+        System.out.println("latitude : " + location.getLongitude());
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference myRef = database.getReference("bubble").child(idBubble);
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
+                Intent intent = new Intent(BubbleOnOff.STATE_CHANGE);
                 if(snapshot.child("etat").getValue().equals("true")){
+                    intent.putExtra("State", true);
                     myRef.child("etat").setValue("false");
-                    buttonActivate.setText("Stopper la bubble");
                 }else{
+                    intent.putExtra("State", true);
                     myRef.child("etat").setValue("true");
-                    buttonActivate.setText("Démarrer la bubble");
                 }
+                getApplicationContext().sendBroadcast(intent);
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -299,5 +338,16 @@ public class MyBubbleActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onStop();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+        if(avatarDisplay.length>0){
+            imageView.setImageBitmap(null);
+        }
+        outState.putByteArray("myAvatar", avatarDisplay);
+
     }
 }

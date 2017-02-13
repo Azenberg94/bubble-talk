@@ -43,8 +43,8 @@ public class CustomList extends ArrayAdapter<String>{
         txtTitle.setText(web[position]);
 
         byte[] b = Base64.decode(image[position], Base64.DEFAULT);
-        Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
         imageView.setImageBitmap(null);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
         imageView.setImageBitmap(bitmap);
 
 
