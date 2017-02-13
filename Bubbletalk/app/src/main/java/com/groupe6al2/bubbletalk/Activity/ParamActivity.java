@@ -90,7 +90,6 @@ public class ParamActivity extends AppCompatActivity {
         editTextPseudo.setText(currentUser.getPseudo());
 
         imageView = (ImageView) findViewById(R.id.imageView);
-        imageView.setImageBitmap(null);
         checkBox = (CheckBox) findViewById(R.id.checkBoxPseudo);
         //System.out.println("usePseudo : " + currentUser.getUsePseudo());
         if(currentUser.getUsePseudo()==true){
@@ -100,17 +99,21 @@ public class ParamActivity extends AppCompatActivity {
 
         if(savedInstanceState != null)
         {
-            avatarDisplay = savedInstanceState.getByteArray("myAvatar");
+            if(savedInstanceState.getByteArray("myAvatar").length>0) {
+                avatarDisplay = savedInstanceState.getByteArray("myAvatar");
+            }
         }
         if (avatarDisplay.length>0){
             Bitmap bitmap = BitmapFactory.decodeByteArray(avatarDisplay,0,avatarDisplay.length);
             imageView.setImageBitmap(null);
             imageView.setImageBitmap(bitmap);
-        } else if(!shre.getString("avatar_"+user.getUid(),"").equals("")){
+        }else if(!shre.getString("avatar_"+user.getUid(),"").equals("")){
             avatarBefore = Base64.decode(shre.getString("avatar_"+user.getUid(),""), Base64.DEFAULT);
             Bitmap bitmap = BitmapFactory.decodeByteArray(avatarBefore,0,avatarBefore.length);
             imageView.setImageBitmap(null);
             imageView.setImageBitmap(bitmap);
+        }else{
+
         }
 
         Button buttonUpdateAvatar = (Button) findViewById(R.id.buttonUpadteAvatar);
@@ -139,7 +142,6 @@ public class ParamActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == 1 && resultCode == RESULT_OK && null != data) {
             Uri selectedImage = data.getData();
             String[] filePathColumn = { MediaStore.Images.Media.DATA };
@@ -153,7 +155,6 @@ public class ParamActivity extends AppCompatActivity {
             cursor.close();
 
             avatarDisplay = readBytesFromFile(picturePath);
-            System.out.println("BEFORE : " + avatarDisplay.length);
             // Get the data from an ImageView as bytes
             imageView.setDrawingCacheEnabled(true);
             imageView.buildDrawingCache();
@@ -162,8 +163,8 @@ public class ParamActivity extends AppCompatActivity {
             Bitmap bitmap = BitmapFactory.decodeByteArray(avatarDisplay,0,avatarDisplay.length);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG,20,stream);
+
             avatarDisplay = stream.toByteArray();
-            System.out.println("AFTER : " + avatarDisplay.length);
             imageView.setImageBitmap(null);
             imageView.setImageBitmap(bitmap);
 
@@ -219,7 +220,7 @@ public class ParamActivity extends AppCompatActivity {
             }
         }
 
-        if(!avatarBefore.equals(avatarDisplay)){
+        if(avatarBefore.length!=avatarDisplay.length){
             avatar = "true";
             currentUser.setAvatar(avatar);
             avatarBefore = avatarDisplay;
@@ -278,7 +279,11 @@ public class ParamActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
+        if(avatarDisplay.length>0){
+            imageView.setImageBitmap(null);
+        }
         outState.putByteArray("myAvatar", avatarDisplay);
+
     }
 
 }

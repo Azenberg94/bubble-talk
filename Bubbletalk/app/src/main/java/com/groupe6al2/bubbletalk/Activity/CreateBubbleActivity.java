@@ -92,7 +92,19 @@ public class CreateBubbleActivity extends AppCompatActivity {
         editTextNameCreateBubble = (EditText) findViewById(R.id.editTextNameCreateBubble);
         editTextDescriptionCreateBubble = (EditText) findViewById(R.id.editTextDescriptionCreateBubble);
         imageView = (ImageView) findViewById(R.id.imageViewCreateBubble);
-        imageView.setImageBitmap(null);
+        if(savedInstanceState != null)
+        {
+            if(savedInstanceState.getByteArray("myAvatar").length>0) {
+                avatarBubbleDisplay = savedInstanceState.getByteArray("myAvatar");
+            }
+        }
+        if (avatarBubbleDisplay.length>0){
+            Bitmap bitmap = BitmapFactory.decodeByteArray(avatarBubbleDisplay,0,avatarBubbleDisplay.length);
+            imageView.setImageBitmap(null);
+            imageView.setImageBitmap(bitmap);
+        }
+
+
         Button buttonUpdateAvatarBubble = (Button) findViewById(R.id.buttonUpdateAvatarBubble);
         buttonUpdateAvatarBubble.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -210,5 +222,18 @@ public class CreateBubbleActivity extends AppCompatActivity {
             }
         });
     }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+        if(avatarBubbleDisplay.length>0){
+            imageView.setImageBitmap(null);
+        }
+        outState.putByteArray("myAvatar", avatarBubbleDisplay);
+
+    }
+
 
 }
