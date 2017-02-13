@@ -3,6 +3,7 @@ package com.groupe6al2.bubbletalk.Widget;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -25,8 +26,9 @@ public class BubbleOnOff extends AppWidgetProvider {
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
         Log.i("updateAppWidget", "1");
+
         CharSequence widgetText = context.getString(R.string.appwidget_text);
-        myAppWidgetId = appWidgetId;
+
         Intent intent = new Intent(context, BubbleOnOff.class);
         intent.putExtra("appWidgetId", appWidgetId);
         intent.setAction(MY_ON_CLICK);
@@ -42,6 +44,10 @@ public class BubbleOnOff extends AppWidgetProvider {
     }
     @Override
     public void onReceive(Context context, Intent intent) {
+        ComponentName name = new ComponentName(context, BubbleOnOff.class);
+        int [] ids = AppWidgetManager.getInstance(context).getAppWidgetIds(name);
+        myAppWidgetId = ids[0];
+
         Log.i("onReceive", "----------------------------------------------------------------------------1");
         super.onReceive(context, intent);//add this line
         if (STATE_CHANGE.equals(intent.getAction())) {
@@ -56,10 +62,7 @@ public class BubbleOnOff extends AppWidgetProvider {
                 views.setImageViewResource(R.id.onoffButton, R.drawable.on);
                 AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
                 appWidgetManager.updateAppWidget(myAppWidgetId, views);
-                appWidgetManager.updateAppWidget(appWidgetId, views);
-                Intent intentStartApp = new Intent(context.getApplicationContext(), BubbleActivity.class);
-                intentStartApp.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intentStartApp);
+
             }else {
                 Log.i("off", "----------------------------------------------------------------------------1");
                 views.setImageViewResource(R.id.onoffButton, R.drawable.off);
