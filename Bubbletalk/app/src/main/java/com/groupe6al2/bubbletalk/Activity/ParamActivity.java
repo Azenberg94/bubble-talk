@@ -98,16 +98,18 @@ public class ParamActivity extends AppCompatActivity {
         }
 
 
-       /* if(savedInstanceState != null)
+        if(savedInstanceState != null)
         {
             avatarDisplay = savedInstanceState.getByteArray("myAvatar");
         }
         if (avatarDisplay.length>0){
             Bitmap bitmap = BitmapFactory.decodeByteArray(avatarDisplay,0,avatarDisplay.length);
+            imageView.setImageBitmap(null);
             imageView.setImageBitmap(bitmap);
-        } else */if(!shre.getString("avatar_"+user.getUid(),"").equals("")){
+        } else if(!shre.getString("avatar_"+user.getUid(),"").equals("")){
             avatarBefore = Base64.decode(shre.getString("avatar_"+user.getUid(),""), Base64.DEFAULT);
             Bitmap bitmap = BitmapFactory.decodeByteArray(avatarBefore,0,avatarBefore.length);
+            imageView.setImageBitmap(null);
             imageView.setImageBitmap(bitmap);
         }
 
@@ -162,6 +164,7 @@ public class ParamActivity extends AppCompatActivity {
             bitmap.compress(Bitmap.CompressFormat.JPEG,20,stream);
             avatarDisplay = stream.toByteArray();
             System.out.println("AFTER : " + avatarDisplay.length);
+            imageView.setImageBitmap(null);
             imageView.setImageBitmap(bitmap);
 
         }
