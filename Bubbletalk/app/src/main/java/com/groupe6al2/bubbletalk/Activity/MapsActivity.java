@@ -20,10 +20,20 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.groupe6al2.bubbletalk.Class.Bubble;
 import com.groupe6al2.bubbletalk.Class.BubbleTalkSQLite;
 import com.groupe6al2.bubbletalk.R;
 import com.groupe6al2.bubbletalk.Widget.BubbleOnOff;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.ValueEventListener;
+
+import com.google.firebase.database.DatabaseError;
+
 
 import java.util.ArrayList;
 
@@ -34,6 +44,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     FragmentTransaction fragmentTransaction;
     BubbleTalkSQLite bubbleTalkSQLite;
     String userid;
+
+    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    final DatabaseReference myRef = database.getReference("bubble");
+
+    Query query = myRef.orderByChild("name");
 
 
     @Override
@@ -89,8 +104,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
         Location location = new Location("");
-        LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 16.0f));
+        LatLng currentLocation = new LatLng(48.6693, 2.3598);
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 12.0f));
 
         Intent intent = new Intent(BubbleOnOff.STATE_CHANGE);
         intent.putExtra("State", true);
@@ -103,10 +118,46 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         addBubbles(bubbles);
 
 
+
+
     }
+
+
+    query.addChildEventListener(new ChildEventListener() {
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            if (dataSnapshot.getValue(Bubble.class).getEtat().equals("true")) {
+                Bubble b = dataSnapshot.getValue(Bubble.class);
+                b.setId(dataSnapshot.getKey());
+                addBubbles(b);
+            }
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    });
+
     public void addBubbles(ArrayList<Bubble> bubbles){
         int strokeColor;
         LatLng bubbleLocation;
+        Log.i("onCall", "----------------------------------------------------------------------------1");
         for (Bubble bubble : bubbles)
         {
             bubbleLocation = new LatLng(Double.parseDouble(bubble.getLatitude()), Double.parseDouble(bubble.getLongitude()));
