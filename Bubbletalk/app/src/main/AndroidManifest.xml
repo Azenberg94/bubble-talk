@@ -80,7 +80,8 @@
 
         <activity android:name=".Activity.NearbyActivity" />
         <activity android:name=".Activity.BubbleActivity" />
-        <activity android:name=".Activity.MyBubbleActivity"></activity>
+        <activity android:name=".Activity.MyBubbleActivity" />
+        <activity android:name=".Activity.ChatActivity"></activity>
     </application>
 
 </manifest>

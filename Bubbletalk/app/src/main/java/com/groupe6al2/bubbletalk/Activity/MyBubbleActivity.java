@@ -124,6 +124,15 @@ public class MyBubbleActivity extends AppCompatActivity {
             }
         });
 
+
+        Button buttonMyBubbleGoToChat = (Button) findViewById(R.id.buttonMyBubbleGoToChat);
+        buttonMyBubbleGoToChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToBubble();
+            }
+        });
+
     }
 
     private void goNearbyGO() {
@@ -131,6 +140,11 @@ public class MyBubbleActivity extends AppCompatActivity {
         startActivity(i);
     }
 
+    private void goToBubble() {
+        Intent intent = new Intent(MyBubbleActivity.this, ChatActivity.class);
+        intent.putExtra("id", idBubble);
+        startActivity(intent);
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
