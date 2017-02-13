@@ -11,9 +11,10 @@ import android.widget.RemoteViews;
 import com.groupe6al2.bubbletalk.Activity.BubbleActivity;
 import com.groupe6al2.bubbletalk.R;
 
-/**
- * Implementation of App Widget functionality.
- */
+
+import com.groupe6al2.bubbletalk.Activity.BubbleActivity;
+import com.groupe6al2.bubbletalk.R;
+
 public class BubbleOnOff extends AppWidgetProvider {
 
     private static final String MY_ON_CLICK = "myOnClickTag";
@@ -55,6 +56,10 @@ public class BubbleOnOff extends AppWidgetProvider {
                 views.setImageViewResource(R.id.onoffButton, R.drawable.on);
                 AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
                 appWidgetManager.updateAppWidget(myAppWidgetId, views);
+                appWidgetManager.updateAppWidget(appWidgetId, views);
+                Intent intentStartApp = new Intent(context.getApplicationContext(), BubbleActivity.class);
+                intentStartApp.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intentStartApp);
             }else {
                 Log.i("off", "----------------------------------------------------------------------------1");
                 views.setImageViewResource(R.id.onoffButton, R.drawable.off);

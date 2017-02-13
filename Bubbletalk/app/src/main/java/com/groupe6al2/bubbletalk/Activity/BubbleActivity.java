@@ -18,8 +18,13 @@ import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.groupe6al2.bubbletalk.Class.Bubble;
@@ -30,7 +35,12 @@ import com.groupe6al2.bubbletalk.R;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
-
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 public class BubbleActivity extends AppCompatActivity {
@@ -58,6 +68,8 @@ public class BubbleActivity extends AppCompatActivity {
     //Tab for id ONCLIC
     String[] idMyBubble;
 
+    ArrayList<Bubble> b;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -80,9 +92,49 @@ public class BubbleActivity extends AppCompatActivity {
 
         //Shared pref
         shre = PreferenceManager.getDefaultSharedPreferences(this);
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference myRef = database.getReference("bubble");
+        b = new ArrayList<>();
 
+        Query query =myRef.orderByChild("name");
+        query.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                if (dataSnapshot.getValue(Bubble.class).getEtat().equals("true")) {
+                    b.add(dataSnapshot.getValue(Bubble.class));
+                    b.get(b.size() - 1).setId(dataSnapshot.getKey());
+                    refreshBubbleProche();
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         refreshMyBubble();
-        refreshBubbleProche();
 
     }
 
@@ -90,9 +142,9 @@ public class BubbleActivity extends AppCompatActivity {
         ArrayList<Bubble> bubbleArrayList = bubbleTalkSQLite.getMyBubbles(user.getUid());
 
         idMyBubble = new String[bubbleArrayList.size()];
-
         String[] nameBubble = new String[bubbleArrayList.size()];
         String[] image = new String[bubbleArrayList.size()];
+
         for(int i=0 ; i<bubbleArrayList.size(); i++){
             nameBubble[i] = bubbleArrayList.get(i).getName();
             idMyBubble[i] = bubbleArrayList.get(i).getId();
@@ -111,39 +163,50 @@ public class BubbleActivity extends AppCompatActivity {
             }
         });
 
-        /*
-        for(int i=0 ; i<bubbleArrayList.size(); i++){
-            listItemsMyBubble.add(bubbleArrayList.get(i).getName());
-            idMyBubble[i] = bubbleArrayList.get(i).getId();
-        }
-        adapterMyBubble=new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1,
-                listItemsMyBubble);
-        listViewMyBubble.setAdapter(adapterMyBubble);
-        adapterMyBubble.notifyDataSetChanged();
-        listViewMyBubble.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(BubbleActivity.this, MyBubbleActivity.class);
-                intent.putExtra("id", idMyBubble[position]);
-                startActivity(intent);
-            }
 
-
-        });*/
     }
 
     private void refreshBubbleProche() {
+        String[] nameBubble;
+        String[] image;
+        final String[] idBubbleProche;
+
         if(Utils.isConnectedInternet(this)==false) {
-            listItemsProche.add("Veuillez verifiez votre connexion internet.");
+            nameBubble = new String[1];
+            nameBubble[0]= "Veuillez verifiez votre connexion internet.";
+            image = new String[1];
+            image[0]="";
+
+
+            CustomList adapter = new
+                    CustomList(BubbleActivity.this, nameBubble, image);
+            listViewProche.setAdapter(adapter);
+
         }else{
 
+            nameBubble = new String[b.size()];
+            image = new String[b.size()];
+            idBubbleProche = new String[b.size()];
+
+            for(int i = 0; i<b.size(); i++){
+                idBubbleProche[i] = b.get(i).getId();
+                nameBubble[i] = b.get(i).getName();
+                image[i]="";
+
+            }
+            CustomList adapter = new
+                    CustomList(BubbleActivity.this, nameBubble, image);
+            listViewProche.setAdapter(adapter);
+            listViewProche.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent intent = new Intent(BubbleActivity.this, ChatActivity.class);
+                    intent.putExtra("id", idBubbleProche[position]);
+                    startActivity(intent);
+                }
+            });
         }
-        adapterProche=new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1,
-                listItemsProche);
-        listViewProche.setAdapter(adapterProche);
-        adapterProche.notifyDataSetChanged();
+
     }
 
 

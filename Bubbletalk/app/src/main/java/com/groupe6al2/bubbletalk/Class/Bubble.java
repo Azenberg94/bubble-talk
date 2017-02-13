@@ -14,6 +14,7 @@ public class Bubble {
     private String longitude;
     private String active;
     private String description;
+    private String etat;
 
     public Bubble(String id, String name, String description, String proprio, String avatarMd5, String latitude, String longitude, String active) {
         this.id = id;
@@ -26,12 +27,25 @@ public class Bubble {
         this.active = active;
     }
 
+    public Bubble(){
+
+    }
+
     public Bubble(String id, String name, String description, String proprio, String avatarMd5) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.proprio = proprio;
         this.avatarMd5 = avatarMd5;
+    }
+
+    public Bubble(String id, String name, String description, String proprio, String avatarMd5, String etat) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.proprio = proprio;
+        this.avatarMd5 = avatarMd5;
+        this.etat = etat;
     }
 
     public String getId() {
@@ -91,17 +105,26 @@ public class Bubble {
         this.description = description;
     }
 
+    public String getEtat() {
+        return etat;
+    }
+
+    public void setEtat(String etat) {
+        this.etat = etat;
+    }
+
     @Override
     public String toString() {
         return "Bubble{" +
                 "id='" + id + '\'' +
-                ", proprio=" + proprio +
+                ", proprio='" + proprio + '\'' +
                 ", avatarMd5='" + avatarMd5 + '\'' +
                 ", name='" + name + '\'' +
                 ", latitude='" + latitude + '\'' +
                 ", longitude='" + longitude + '\'' +
                 ", active='" + active + '\'' +
                 ", description='" + description + '\'' +
+                ", etat='" + etat + '\'' +
                 '}';
     }
 }

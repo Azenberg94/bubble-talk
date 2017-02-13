@@ -164,6 +164,7 @@ public class CreateBubbleActivity extends AppCompatActivity {
             databaseReference.child("name").setValue(editTextNameCreateBubble.getText().toString());
             databaseReference.child("description").setValue(editTextDescriptionCreateBubble.getText().toString());
             databaseReference.child("proprio").setValue(user.getUid());
+            databaseReference.child("etat").setValue("false");
 
             String myId = databaseReference.getKey();
             updateFirebaseStorage(myId);
