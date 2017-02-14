@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity
         bubbleTalkSQLite= new BubbleTalkSQLite(this);
 
 
+
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         myRef = database.getReference("User").child(user.getUid());
 

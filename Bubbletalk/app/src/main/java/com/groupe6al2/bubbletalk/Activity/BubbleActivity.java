@@ -54,8 +54,7 @@ public class BubbleActivity extends AppCompatActivity {
     FirebaseUser user;
     FirebaseDatabase database;
     DatabaseReference databaseReference;
-    FirebaseStorage storage;
-    StorageReference storageRef;
+
     BubbleTalkSQLite bubbleTalkSQLite;
     ListView listViewMyBubble;
     ListView listViewProche;
@@ -87,8 +86,7 @@ public class BubbleActivity extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference("bubble");
 
-        storage = FirebaseStorage.getInstance();
-        storageRef = storage.getReferenceFromUrl("gs://bubbletalk-967fa.appspot.com");
+
 
         bubbleTalkSQLite = new BubbleTalkSQLite(this);
 
@@ -182,7 +180,7 @@ public class BubbleActivity extends AppCompatActivity {
             image[i] = shre.getString("bubble_" + bubbleArrayList.get(i).getId(), "");
         }
         adapter1 = new
-                CustomList(BubbleActivity.this, nameBubble, image);
+                CustomList(BubbleActivity.this, nameBubble, image, idMyBubble);
                 listViewMyBubble.setAdapter(adapter1);
 
         listViewMyBubble.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -193,13 +191,13 @@ public class BubbleActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-
     }
 
+
+
     private void refreshBubbleProche() {
-        String[] nameBubble;
-        String[] image;
+        String[] nameBubble = null;
+        String[] image = null;
         final String[] idBubbleProche;
 
         if(Utils.isConnectedInternet(this)==false) {
@@ -207,10 +205,11 @@ public class BubbleActivity extends AppCompatActivity {
             nameBubble[0]= "Veuillez verifiez votre connexion internet.";
             image = new String[1];
             image[0]="";
-
+            idBubbleProche = new String[1];
+            idBubbleProche[0] ="";
 
             CustomList adapter2 = new
-                    CustomList(BubbleActivity.this, nameBubble, image);
+                    CustomList(BubbleActivity.this, nameBubble, image, idBubbleProche);
             listViewProche.setAdapter(adapter2);
 
         }else{
@@ -222,11 +221,10 @@ public class BubbleActivity extends AppCompatActivity {
             for(int i = 0; i<b.size(); i++){
                 idBubbleProche[i] = b.get(i).getId();
                 nameBubble[i] = b.get(i).getName();
-                image[i]="";
-
+                image[i]="myGlideFirebase";
             }
             adapter2 = new
-                    CustomList(BubbleActivity.this, nameBubble, image);
+                    CustomList(BubbleActivity.this, nameBubble, image, idBubbleProche);
             listViewProche.setAdapter(adapter2);
             listViewProche.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override

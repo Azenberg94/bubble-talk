@@ -153,20 +153,23 @@ public class ParamActivity extends AppCompatActivity {
             int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
             String picturePath = cursor.getString(columnIndex);
             cursor.close();
+            if(readBytesFromFile(picturePath).length/(1024*1024)>4){
+                Toast.makeText(this, "Image trop lourde ! 4mo max",Toast.LENGTH_SHORT).show();
+            }else {
+                avatarDisplay = readBytesFromFile(picturePath);
+                // Get the data from an ImageView as bytes
+                imageView.setDrawingCacheEnabled(true);
+                imageView.buildDrawingCache();
 
-            avatarDisplay = readBytesFromFile(picturePath);
-            // Get the data from an ImageView as bytes
-            imageView.setDrawingCacheEnabled(true);
-            imageView.buildDrawingCache();
+                // byte[] test = Base64.decode(myBtoS, Base64.DEFAULT);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(avatarDisplay, 0, avatarDisplay.length);
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 20, stream);
 
-            // byte[] test = Base64.decode(myBtoS, Base64.DEFAULT);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(avatarDisplay,0,avatarDisplay.length);
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG,20,stream);
-
-            avatarDisplay = stream.toByteArray();
-            imageView.setImageBitmap(null);
-            imageView.setImageBitmap(bitmap);
+                avatarDisplay = stream.toByteArray();
+                imageView.setImageBitmap(null);
+                imageView.setImageBitmap(bitmap);
+            }
 
         }
     }

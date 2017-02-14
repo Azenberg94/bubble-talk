@@ -46,6 +46,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
+import static com.groupe6al2.bubbletalk.Class.Utils.readBytesFromFile;
 import static com.groupe6al2.bubbletalk.Class.Utils.returnHex;
 
 public class CreateBubbleActivity extends AppCompatActivity {
@@ -102,6 +103,7 @@ public class CreateBubbleActivity extends AppCompatActivity {
             Bitmap bitmap = BitmapFactory.decodeByteArray(avatarBubbleDisplay,0,avatarBubbleDisplay.length);
             imageView.setImageBitmap(null);
             imageView.setImageBitmap(bitmap);
+            bitmap.recycle();
         }
 
 
@@ -133,19 +135,23 @@ public class CreateBubbleActivity extends AppCompatActivity {
             int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
             String picturePath = cursor.getString(columnIndex);
             cursor.close();
+            if(readBytesFromFile(picturePath).length/(1024*1024)>4){
+                Toast.makeText(this, "Image trop lourde ! 4mo max",Toast.LENGTH_SHORT).show();
+            }else {
+                avatarBubbleDisplay = utils.readBytesFromFile(picturePath);
 
-            avatarBubbleDisplay = utils.readBytesFromFile(picturePath);
+                // Get the data from an ImageView as bytes
+                imageView.setDrawingCacheEnabled(true);
+                imageView.buildDrawingCache();
 
-            // Get the data from an ImageView as bytes
-            imageView.setDrawingCacheEnabled(true);
-            imageView.buildDrawingCache();
+                Bitmap bitmap = BitmapFactory.decodeByteArray(avatarBubbleDisplay, 0, avatarBubbleDisplay.length);
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 20, stream);
+                avatarBubbleDisplay = stream.toByteArray();
 
-            Bitmap bitmap = BitmapFactory.decodeByteArray(avatarBubbleDisplay,0,avatarBubbleDisplay.length);
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG,20,stream);
-            avatarBubbleDisplay = stream.toByteArray();
-
-            imageView.setImageBitmap(bitmap);
+                imageView.setImageBitmap(bitmap);
+                bitmap.recycle();
+            }
         }
     }
 
@@ -161,15 +167,18 @@ public class CreateBubbleActivity extends AppCompatActivity {
         }else{
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference databaseReference = database.getReference("bubble").push();
+            databaseReference.child("etat").setValue("false");
             databaseReference.child("name").setValue(editTextNameCreateBubble.getText().toString());
             databaseReference.child("description").setValue(editTextDescriptionCreateBubble.getText().toString());
             databaseReference.child("proprio").setValue(user.getUid());
-            databaseReference.child("etat").setValue("false");
+
             databaseReference.child("longitude").setValue("0");
             databaseReference.child("latitude").setValue("0");
 
             String myId = databaseReference.getKey();
-            updateFirebaseStorage(myId);
+            if(avatarBubbleDisplay.length>0) {
+                updateFirebaseStorage(myId);
+            }
             String myMd5 ="";
             MessageDigest md = null;
 

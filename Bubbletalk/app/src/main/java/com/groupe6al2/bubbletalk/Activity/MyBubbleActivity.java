@@ -251,18 +251,22 @@ public class MyBubbleActivity extends AppCompatActivity {
             String picturePath = cursor.getString(columnIndex);
             cursor.close();
 
-            avatarDisplay = readBytesFromFile(picturePath);
-            // Get the data from an ImageView as bytes
-            imageView.setDrawingCacheEnabled(true);
-            imageView.buildDrawingCache();
+            if(readBytesFromFile(picturePath).length/(1024*1024)>4){
+                Toast.makeText(this, "Image trop lourde ! 4mo max",Toast.LENGTH_SHORT).show();
+            }else {
+                avatarDisplay = readBytesFromFile(picturePath);
+                // Get the data from an ImageView as bytes
+                imageView.setDrawingCacheEnabled(true);
+                imageView.buildDrawingCache();
+                imageView.setImageBitmap(null);
+                // byte[] test = Base64.decode(myBtoS, Base64.DEFAULT);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(avatarDisplay, 0, avatarDisplay.length);
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 20, stream);
+                avatarDisplay = stream.toByteArray();
 
-            // byte[] test = Base64.decode(myBtoS, Base64.DEFAULT);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(avatarDisplay,0,avatarDisplay.length);
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG,20,stream);
-            avatarDisplay = stream.toByteArray();
-            System.out.println("AFTER : " + avatarDisplay.length);
-            imageView.setImageBitmap(bitmap);
+                imageView.setImageBitmap(bitmap);
+            }
 
         }
     }
@@ -332,7 +336,7 @@ public class MyBubbleActivity extends AppCompatActivity {
         // Points to the root reference
 
         StorageReference storageRef = storage.getReferenceFromUrl("gs://bubbletalk-967fa.appspot.com");
-        StorageReference avatarFileRef = storageRef.child("bubble/"+idBubble+".jpg");
+        StorageReference avatarFileRef = storageRef.child("bubble/"+idBubble+"");
 
 
         UploadTask uploadTask = avatarFileRef.putBytes(avatarDisplay);
