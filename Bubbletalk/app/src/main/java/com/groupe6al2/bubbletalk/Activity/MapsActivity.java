@@ -189,7 +189,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        System.out.println("Marker");
+        Intent intent = new Intent(MapsActivity.this, ChatActivity.class);
+        intent.putExtra("id",   marker.getSnippet());
+        startActivity(intent);
         return false;
     }
 }
