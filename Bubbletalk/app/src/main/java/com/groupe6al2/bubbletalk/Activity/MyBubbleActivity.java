@@ -60,7 +60,7 @@ public class MyBubbleActivity extends AppCompatActivity {
     SharedPreferences shre;
     Bubble bubble;
     Button buttonActivate;
-
+    String action = "";
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReferenceFromUrl("gs://bubbletalk-967fa.appspot.com");
 
@@ -146,8 +146,10 @@ public class MyBubbleActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (buttonActivate.getText().equals("Stopper la bubble")) {
                     buttonActivate.setText("Démarrer la bubble");
+                    action = "stop";
                 } else {
                     buttonActivate.setText("Stopper la bubble");
+                    action = "go";
                 }
                 activateBubble();
             }
@@ -203,9 +205,12 @@ public class MyBubbleActivity extends AppCompatActivity {
         }
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference myRef = database.getReference("bubble").child(idBubble);
+        final DatabaseReference myRef = database.getReference("bubble");
         final double finalLongitude = longitude;
         final double finalLatitude = latitude;
+        final boolean[] activate = {true};
+
+
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -213,6 +218,7 @@ public class MyBubbleActivity extends AppCompatActivity {
                 if(snapshot.child("etat").getValue().equals("true")){
                     intent.putExtra("State", true);
                     myRef.child("etat").setValue("false");
+                    activate[0] = false;
                 }else{
                     intent.putExtra("State", true);
                     myRef.child("etat").setValue("true");
@@ -226,6 +232,9 @@ public class MyBubbleActivity extends AppCompatActivity {
 
             }
         });
+
+
+
 
     }
 

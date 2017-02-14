@@ -117,7 +117,6 @@ public class BubbleActivity extends AppCompatActivity {
             }
         }
 
-
         Query query =myRef.orderByChild("name");
         final double finalLongitude = longitude;
         final double finalLatitude = latitude;
