@@ -129,10 +129,12 @@ public class BubbleActivity extends AppCompatActivity {
                 if (dataSnapshot.getValue(Bubble.class).getEtat().equals("true")) {
 
                     double testDistance = Utils.Distance(Double.parseDouble(dataSnapshot.getValue(Bubble.class).getLatitude()), Double.parseDouble(dataSnapshot.getValue(Bubble.class).getLongitude()), finalLatitude, finalLongitude);
-                    System.out.println("myDist = " + testDistance);
-                    b.add(dataSnapshot.getValue(Bubble.class));
-                    b.get(b.size() - 1).setId(dataSnapshot.getKey());
-                    refreshBubbleProche();
+                   // System.out.println("myDist = " + testDistance);
+                    if(testDistance<50) {
+                        b.add(dataSnapshot.getValue(Bubble.class));
+                        b.get(b.size() - 1).setId(dataSnapshot.getKey());
+                        refreshBubbleProche();
+                    }
                 }
             }
 

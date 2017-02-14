@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -20,11 +21,14 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.groupe6al2.bubbletalk.Class.Bubble;
 import com.groupe6al2.bubbletalk.Class.BubbleTalkSQLite;
+import com.groupe6al2.bubbletalk.Class.Utils;
 import com.groupe6al2.bubbletalk.R;
 import com.groupe6al2.bubbletalk.Widget.BubbleOnOff;
 import com.google.firebase.database.DataSnapshot;
@@ -37,7 +41,7 @@ import com.google.firebase.database.DatabaseError;
 
 import java.util.ArrayList;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     GoogleMap mMap;
     MapFragment mMapFragment;
@@ -103,9 +107,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         /*LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
-        Location location = new Location("");
-        LatLng currentLocation = new LatLng(48.6693, 2.3598);
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 12.0f));
+        double latitude = 0;
+        double longitude = 0;
+        Location location = null;
+        LocationManager mlocManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+        if (mlocManager != null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                System.out.println("test");
+                return;
+            }
+            location = mlocManager
+                    .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            if (location != null) {
+                latitude = location.getLatitude();
+                longitude = location.getLongitude();
+            }
+        }
+        LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 17.0f));
+        googleMap.setOnMarkerClickListener(this);
+
 
         Intent intent = new Intent(BubbleOnOff.STATE_CHANGE);
         intent.putExtra("State", true);
@@ -113,65 +134,62 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         getApplicationContext().sendBroadcast(intent);
 
 
+        final double finalLongitude = longitude;
+        final double finalLatitude = latitude;
+        query.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                if (dataSnapshot.getValue(Bubble.class).getEtat().equals("true")) {
+                    double testDistance = Utils.Distance(Double.parseDouble(dataSnapshot.getValue(Bubble.class).getLatitude()), Double.parseDouble(dataSnapshot.getValue(Bubble.class).getLongitude()), finalLatitude, finalLongitude);
+                    if(testDistance<50) {
+                        Bubble b = dataSnapshot.getValue(Bubble.class);
+                        b.setId(dataSnapshot.getKey());
+                        addBubbles(b);
+                    }
+                }
+            }
 
-        ArrayList<Bubble> bubbles = bubbleTalkSQLite.getAllActiveBubbles();
-        addBubbles(bubbles);
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
+            }
 
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
 
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
     }
 
-
-    query.addChildEventListener(new ChildEventListener() {
-        @Override
-        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-            if (dataSnapshot.getValue(Bubble.class).getEtat().equals("true")) {
-                Bubble b = dataSnapshot.getValue(Bubble.class);
-                b.setId(dataSnapshot.getKey());
-                addBubbles(b);
-            }
-        }
-
-        @Override
-        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-        }
-
-        @Override
-        public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-        }
-
-        @Override
-        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-
-        }
-    });
-
-    public void addBubbles(ArrayList<Bubble> bubbles){
+    public void addBubbles(Bubble bubble){
         int strokeColor;
         LatLng bubbleLocation;
         Log.i("onCall", "----------------------------------------------------------------------------1");
-        for (Bubble bubble : bubbles)
-        {
-            bubbleLocation = new LatLng(Double.parseDouble(bubble.getLatitude()), Double.parseDouble(bubble.getLongitude()));
-            if(bubble.getProprio()==userid){
-                strokeColor = Color.BLUE;
-            }else strokeColor = Color.GRAY;
-            mMap.addCircle(new CircleOptions()
-                    .center(bubbleLocation)
-                    .radius(50)
-                    .strokeColor(strokeColor)
-                    .fillColor(Color.TRANSPARENT)
-                    );
-        }
+        bubbleLocation = new LatLng(Double.parseDouble(bubble.getLatitude()), Double.parseDouble(bubble.getLongitude()));
+        if(bubble.getProprio()==userid){
+            strokeColor = Color.BLUE;
+        }else strokeColor = Color.GRAY;
+        mMap.addMarker(new MarkerOptions()
+                .position(bubbleLocation)
+                .snippet(bubble.getId())
+                );
     }
 
 
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        System.out.println("Marker");
+        return false;
+    }
 }

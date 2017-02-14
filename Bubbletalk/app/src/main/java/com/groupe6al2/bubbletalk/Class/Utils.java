@@ -92,7 +92,7 @@ public class Utils {
         double lat_b = convertRad(lat_b_degre);
         double lon_b = convertRad(lon_b_degre);
 
-        double d =  (Math.PI/2 - Math.asin( Math.sin(lat_b) * Math.sin(lat_a) + Math.cos(lon_b - lon_a) * Math.cos(lat_b) * Math.cos(lat_a)));
+        double d = R* (Math.PI/2 - Math.asin( Math.sin(lat_b) * Math.sin(lat_a) + Math.cos(lon_b - lon_a) * Math.cos(lat_b) * Math.cos(lat_a)));
 
         return d;
     }
