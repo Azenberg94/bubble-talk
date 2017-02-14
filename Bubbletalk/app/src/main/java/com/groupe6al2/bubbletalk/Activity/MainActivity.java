@@ -176,7 +176,8 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
         } else if (id == R.id.nav_see_map){
             Intent intent = new Intent(MainActivity.this, MapsActivity.class);
-            intent.putExtra(USER_ID, uid);
+            Log.i("USERID", user.getUid());
+            intent.putExtra(USER_ID, user.getUid());
             startActivity(intent);
         } else if (id == R.id.nav_parametre) {
             if(Utils.isConnectedInternet(this)==true) {

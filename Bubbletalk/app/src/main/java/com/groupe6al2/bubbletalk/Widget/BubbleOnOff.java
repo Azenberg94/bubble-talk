@@ -10,6 +10,7 @@ import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.groupe6al2.bubbletalk.Activity.BubbleActivity;
+import com.groupe6al2.bubbletalk.Activity.MyBubbleActivity;
 import com.groupe6al2.bubbletalk.R;
 
 
@@ -21,6 +22,7 @@ public class BubbleOnOff extends AppWidgetProvider {
     private static final String MY_ON_CLICK = "myOnClickTag";
     public static final String STATE_CHANGE = "BubbleOnOff.STATE_CHANGED";
     private static int myAppWidgetId;
+    private static String bubbleId;
     private static boolean isOn = false;
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
@@ -45,14 +47,19 @@ public class BubbleOnOff extends AppWidgetProvider {
     @Override
     public void onReceive(Context context, Intent intent) {
         ComponentName name = new ComponentName(context, BubbleOnOff.class);
+        if(AppWidgetManager.getInstance(context).getAppWidgetIds(name) == null){
+            return;
+        }
         int [] ids = AppWidgetManager.getInstance(context).getAppWidgetIds(name);
+
         myAppWidgetId = ids[0];
 
         Log.i("onReceive", "----------------------------------------------------------------------------1");
         super.onReceive(context, intent);//add this line
         if (STATE_CHANGE.equals(intent.getAction())) {
             isOn =  intent.getExtras().getBoolean("State");
-
+            bubbleId = intent.getExtras().getString("BubbleID");
+            Log.i(String.valueOf(bubbleId), "----------------------------------------------------------------------------1");
             Log.i("stateOk", "----------------------------------------------------------------------------1");
 
 
@@ -68,6 +75,12 @@ public class BubbleOnOff extends AppWidgetProvider {
                 views.setImageViewResource(R.id.onoffButton, R.drawable.off);
                 AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
                 appWidgetManager.updateAppWidget(myAppWidgetId, views);
+            }
+        }else if(intent.getAction().equals(MY_ON_CLICK)){
+            if(isOn){
+                Intent intentStartApp = new Intent(context.getApplicationContext(), MyBubbleActivity.class);
+                intentStartApp.putExtra("id", bubbleId);
+                context.startActivity(intentStartApp);
             }
         }
     }

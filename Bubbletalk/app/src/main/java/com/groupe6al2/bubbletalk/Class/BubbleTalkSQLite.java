@@ -114,7 +114,7 @@ public class BubbleTalkSQLite extends SQLiteOpenHelper {
         return userList.get(0);
     }
 
-    public ArrayList<Bubble> getMyBubbles(String id){
+    public ArrayList<Bubble> getMyBubbles(String id ){
         ArrayList<Bubble> bubbleArrayList = new ArrayList<>();
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM "+TABLE_BUBBLE +" WHERE proprio = '"+id+"' ORDER BY name",null);
@@ -213,6 +213,12 @@ public class BubbleTalkSQLite extends SQLiteOpenHelper {
             }
         }
         return bubbleArrayList;
+    }
+
+    public void changeBubbleState(String id,int state) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String sql = "UPDATE " + TABLE_BUBBLE + " SET " + COL_ACTIVE_BUBBLE + "='" + String.valueOf(state) + "' WHERE " + COL_ID_BUBBLE + "='" + id + "'";
+        db.execSQL(sql);
     }
 
 }
