@@ -59,7 +59,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        userid = getIntent().getStringExtra("id");
+        userid = getIntent().getStringExtra("USER_ID");
 
         bubbleTalkSQLite = new BubbleTalkSQLite(this);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -122,16 +122,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 latitude = location.getLatitude();
                 longitude = location.getLongitude();
             }
+
         }
-        LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 17.0f));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude,longitude), 17.0f));
         googleMap.setOnMarkerClickListener(this);
 
 
-        Intent intent = new Intent(BubbleOnOff.STATE_CHANGE);
-        intent.putExtra("State", true);
-        Log.i("onCall", "----------------------------------------------------------------------------1");
-        getApplicationContext().sendBroadcast(intent);
+
 
 
         final double finalLongitude = longitude;
@@ -177,13 +174,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng bubbleLocation;
         Log.i("onCall", "----------------------------------------------------------------------------1");
         bubbleLocation = new LatLng(Double.parseDouble(bubble.getLatitude()), Double.parseDouble(bubble.getLongitude()));
-        if(bubble.getProprio()==userid){
+        if(bubble.getProprio().equals(userid)){
             strokeColor = Color.BLUE;
         }else strokeColor = Color.GRAY;
+        Log.i("USERID", userid);
+        Log.i("USERID",bubble.getProprio());
         mMap.addMarker(new MarkerOptions()
                 .position(bubbleLocation)
                 .snippet(bubble.getId())
+                .title(bubble.getName())
+                .alpha(0)
                 );
+        mMap.addCircle(new CircleOptions()
+                .center(bubbleLocation)
+                .radius(20)
+                .strokeColor(strokeColor)
+                .fillColor(Color.TRANSPARENT)
+        );
     }
 
 

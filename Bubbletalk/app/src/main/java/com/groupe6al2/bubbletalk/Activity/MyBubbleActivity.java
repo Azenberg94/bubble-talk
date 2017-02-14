@@ -19,6 +19,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -85,6 +86,7 @@ public class MyBubbleActivity extends AppCompatActivity {
 
         Intent myIntent = getIntent();
         idBubble = myIntent.getStringExtra("id");
+        Log.i("test---------------", idBubble);
         bubble = bubbleTalkSQLite.getOneBubble(idBubble);
 
         editTextMyBubbleName = (EditText) findViewById(R.id.editTextMyBubbleName);
@@ -223,11 +225,15 @@ public class MyBubbleActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot snapshot) {
                 Intent intent = new Intent(BubbleOnOff.STATE_CHANGE);
                 if(snapshot.child("etat").getValue().equals("true")){
-                    intent.putExtra("State", true);
+                    intent.putExtra("State", false);
+                    intent.putExtra("BubbleID", bubble.getId());
                     myRef.child("etat").setValue("false");
                     activate[0] = false;
                 }else{
                     intent.putExtra("State", true);
+                    Log.i(bubble.getId(), "----------------------------------------------------------------------------1");
+
+                    intent.putExtra("BubbleID", bubble.getId());
                     myRef.child("etat").setValue("true");
                     myRef.child("longitude").setValue(String.valueOf(finalLongitude));
                     myRef.child("latitude").setValue(String.valueOf(finalLatitude));

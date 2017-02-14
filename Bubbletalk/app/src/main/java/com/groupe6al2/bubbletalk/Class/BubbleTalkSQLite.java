@@ -114,7 +114,7 @@ public class BubbleTalkSQLite extends SQLiteOpenHelper {
         return userList.get(0);
     }
 
-    public ArrayList<Bubble> getMyBubbles(String id){
+    public ArrayList<Bubble> getMyBubbles(String id ){
         ArrayList<Bubble> bubbleArrayList = new ArrayList<>();
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM "+TABLE_BUBBLE +" WHERE proprio = '"+id+"' ORDER BY name",null);
@@ -213,6 +213,19 @@ public class BubbleTalkSQLite extends SQLiteOpenHelper {
             }
         }
         return bubbleArrayList;
+    }
+
+    public Bubble getMyActiveBubble(String id){
+        Bubble myActiveBubble = new Bubble();
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM "+TABLE_BUBBLE +" WHERE proprio = '"+id+"' AND isActive=1 ORDER BY name",null);
+        if (cursor.moveToFirst()) {
+            while (cursor.isAfterLast() == false) {
+                myActiveBubble=new Bubble(cursor.getString(cursor.getColumnIndex(COL_ID_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_NAME_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_DESCRIPTION_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_PROPRIO)), cursor.getString(cursor.getColumnIndex(COL_AVATAR_MD5_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_LAT_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_LONG_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_ACTIVE_BUBBLE)));
+                cursor.moveToNext();
+            }
+        }
+        return myActiveBubble;
     }
 
 }
