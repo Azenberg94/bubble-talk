@@ -215,17 +215,10 @@ public class BubbleTalkSQLite extends SQLiteOpenHelper {
         return bubbleArrayList;
     }
 
-    public Bubble getMyActiveBubble(String id){
-        Bubble myActiveBubble = new Bubble();
+    public void changeBubbleState(String id,int state) {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM "+TABLE_BUBBLE +" WHERE proprio = '"+id+"' AND isActive=1 ORDER BY name",null);
-        if (cursor.moveToFirst()) {
-            while (cursor.isAfterLast() == false) {
-                myActiveBubble=new Bubble(cursor.getString(cursor.getColumnIndex(COL_ID_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_NAME_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_DESCRIPTION_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_PROPRIO)), cursor.getString(cursor.getColumnIndex(COL_AVATAR_MD5_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_LAT_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_LONG_BUBBLE)), cursor.getString(cursor.getColumnIndex(COL_ACTIVE_BUBBLE)));
-                cursor.moveToNext();
-            }
-        }
-        return myActiveBubble;
+        String sql = "UPDATE " + TABLE_BUBBLE + " SET " + COL_ACTIVE_BUBBLE + "='" + String.valueOf(state) + "' WHERE " + COL_ID_BUBBLE + "='" + id + "'";
+        db.execSQL(sql);
     }
 
 }
