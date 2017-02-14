@@ -6,15 +6,22 @@
 
     tools:context=".Activity.ChatActivity">
 
-
+    <ImageButton
+        android:id="@+id/buttonU"
+        android:layout_width="50dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_collapse_00015" />
     <LinearLayout
         android:id="@+id/fragment_container"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_below="@+id/buttonU">
 
     </LinearLayout>
+
+
 
 
 </RelativeLayout>

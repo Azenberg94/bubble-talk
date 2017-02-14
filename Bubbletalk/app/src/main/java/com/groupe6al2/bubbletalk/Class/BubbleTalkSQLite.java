@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class BubbleTalkSQLite extends SQLiteOpenHelper {
 
     
-    private static final int version = 23;
+    private static final int version = 24;
     private static final String Name_DataBase = "BubbleTalk";
     private static final String TABLE_USERS = "UserBubble";
     private static final String COL_IDU = "id";

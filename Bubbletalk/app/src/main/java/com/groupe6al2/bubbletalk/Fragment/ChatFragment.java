@@ -13,6 +13,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -69,10 +70,8 @@ public class ChatFragment extends Fragment {
             }
         });
 
-
         Intent myIntent = getActivity().getIntent();
         idBubble = myIntent.getStringExtra("id");
-
 
         myRef =  database.getReference("chat").child(idBubble);
 
@@ -95,7 +94,6 @@ public class ChatFragment extends Fragment {
             }
         });
         return rootView;
-
     }
 
     @Override
@@ -104,47 +102,6 @@ public class ChatFragment extends Fragment {
 
 
     }
-/*
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
-
-        auth = FirebaseAuth.getInstance();
-        user= auth.getCurrentUser();
-        currentUser = bubbleTalkSQLite.getUser(user.getUid());
-        if(currentUser.getUsePseudo()==true) {
-            mUsername = currentUser.getPseudo();
-        }else{
-            mUsername = currentUser.getName();
-        }
-
-        Intent myIntent = getIntent();
-        idBubble = myIntent.getStringExtra("id");
-
-        setTitle("Chatting as " + mUsername);
-        myRef =  database.getReference("chat").child(idBubble);
-
-        // Setup our input methods. Enter key on the keyboard or pushing the send button
-        EditText inputText = (EditText) findViewById(R.id.messageInput);
-        inputText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-                if (actionId == EditorInfo.IME_NULL && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
-                    sendMessage();
-                }
-                return true;
-            }
-        });
-
-        findViewById(R.id.sendButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sendMessage();
-            }
-        });
-    }
-*/
 
     @Override
     public void onStart() {
@@ -163,15 +120,30 @@ public class ChatFragment extends Fragment {
             }
         });
 
-        // Finally, a little indication of connection status
-        mConnectedListener = myRef.getRoot().child(".info/connected").addValueEventListener(new ValueEventListener() {
+
+    }
+
+    private void sendMessage(final View view) {
+
+        final DatabaseReference myReftmps = database.getReference("bubble").child(idBubble);
+        System.out.println("id Bubble : " + idBubble);
+        //to initialize my button
+        myReftmps.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                boolean connected = (Boolean) dataSnapshot.getValue();
-                if (connected) {
-                    //Toast.makeText(ChatActivity.this, "Connected to Firebase", Toast.LENGTH_SHORT).show();
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.child("etat").getValue().equals("true")) {
+                    EditText inputText = (EditText) view.findViewById(R.id.messageInput);
+                    String input = inputText.getText().toString();
+                    if (!input.equals("")) {
+                        // Create our 'model', a Chat object
+                        Chat chat = new Chat(input, mUsername);
+                        // Create a new, auto-generated child of that chat location, and save our chat data there
+                        myRef.push().setValue(chat);
+                        inputText.setText("");
+                    }
                 } else {
-                    //Toast.makeText(ChatActivity.this, "Disconnected from Firebase", Toast.LENGTH_SHORT).show();
+                    System.out.println("Test desactiver");
+                    Toast.makeText(view.getContext(), "La bubble est désactivée.",Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -180,18 +152,8 @@ public class ChatFragment extends Fragment {
 
             }
         });
-    }
 
-    private void sendMessage(View view) {
-        EditText inputText = (EditText) view.findViewById(R.id.messageInput);
-        String input = inputText.getText().toString();
-        if (!input.equals("")) {
-            // Create our 'model', a Chat object
-            Chat chat = new Chat(input, mUsername);
-            // Create a new, auto-generated child of that chat location, and save our chat data there
-            myRef.push().setValue(chat);
-            inputText.setText("");
-        }
+
     }
 
 }

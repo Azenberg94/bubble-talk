@@ -317,7 +317,7 @@ public class MyBubbleActivity extends AppCompatActivity {
             }
         }
 
-        if(avatarBefore!=avatarDisplay){
+        if(avatarBefore!=avatarDisplay & avatarDisplay.length>0){
 
             avatarBefore = avatarDisplay;
             updateFirebaseAndPreferenceStorage();
@@ -371,6 +371,10 @@ public class MyBubbleActivity extends AppCompatActivity {
     }
 
     public void deleteBubble() {
+
+        //Update to etat false
+        database.getReference("bubble").child(idBubble).child("etat").setValue("false");
+
         bubbleTalkSQLite.deleteMyBubble(idBubble);
         Toast.makeText(this, "La Bubble a été éclatée !",Toast.LENGTH_SHORT).show();
         Intent i = new Intent(this, BubbleActivity.class);

@@ -3,9 +3,13 @@ package com.groupe6al2.bubbletalk.Activity;
 
 import android.content.Intent;
 
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,7 +34,9 @@ public class ChatActivity extends AppCompatActivity {
 
     String mUsername;
     String idBubble;
-
+    String fActuel ="";
+    ChatFragment chatFragment = new ChatFragment();
+    ListConnectedFragment listConnectedFragment = new ListConnectedFragment();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     private ValueEventListener mConnectedListener;
     private ChatListAdapter mChatListAdapter;
@@ -40,6 +46,9 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+
+        auth = FirebaseAuth.getInstance();
+        user= auth.getCurrentUser();
 
         Intent myIntent = getIntent();
         idBubble = myIntent.getStringExtra("id");
@@ -57,16 +66,44 @@ public class ChatActivity extends AppCompatActivity {
         });
 
 
-        ChatFragment chatFragment = new ChatFragment();
-        ListConnectedFragment listConnectedFragment = new ListConnectedFragment();
-
+        fActuel = "ChatFragment";
         FragmentTransaction fragmentManager = getSupportFragmentManager().beginTransaction();
         fragmentManager.add(R.id.fragment_container, chatFragment);
-        fragmentManager.add(R.id.fragment_container, listConnectedFragment);
+
 
         fragmentManager.commit();
+        ImageButton buttonU = (ImageButton) findViewById(R.id.buttonU);
+        buttonU.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switchFragment();
+            }
+        });
 
+        addConnectedToChat(idBubble, user.getUid());
 
+    }
+
+    private void addConnectedToChat(String idBubble, String uid) {
+        DatabaseReference databaseReference = database.getReference("chat").child(idBubble).child("userConnected").child(uid);
+        databaseReference.setValue("1");
+    }
+
+    private void deleteConnectedToChat(String idBubble, String uid) {
+        DatabaseReference databaseReference = database.getReference("chat").child(idBubble).child("userConnected").child(uid);
+        databaseReference.removeValue();
+    }
+
+    private void switchFragment() {
+        FragmentTransaction fragmentManager = getSupportFragmentManager().beginTransaction();
+        if(fActuel.equals("ChatFragment")){
+            fActuel="ListConnectedFragment";
+            fragmentManager.replace(R.id.fragment_container, listConnectedFragment);
+        }else{
+            fActuel = "ChatFragment";
+            fragmentManager.replace(R.id.fragment_container, chatFragment);
+        }
+        fragmentManager.commit();
 
     }
 
@@ -80,4 +117,11 @@ public class ChatActivity extends AppCompatActivity {
             }
         }
     }*/
+
+    @Override
+    protected void onDestroy() {
+        deleteConnectedToChat(idBubble, user.getUid());
+        super.onDestroy();
+
+    }
 }

@@ -62,14 +62,6 @@ public class BubbleActivity extends AppCompatActivity {
     CustomList adapter1= null;
     SharedPreferences shre;
 
-    //DEFINING A STRING ADAPTER WHICH WILL HANDLE THE DATA OF THE LISTVIEW
-    ArrayAdapter<String> adapterMyBubble;
-    ArrayAdapter<String> adapterProche;
-
-    //LIST OF ARRAY STRINGS WHICH WILL SERVE AS LIST ITEMS
-    ArrayList<String> listItemsMyBubble=new ArrayList<String>();
-    ArrayList<String> listItemsProche=new ArrayList<String>();
-
     //Tab for id ONCLIC
     String[] idMyBubble;
 

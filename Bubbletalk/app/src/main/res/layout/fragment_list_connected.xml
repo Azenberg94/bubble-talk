@@ -11,11 +11,10 @@
 
         tools:context=".Activity.ChatActivity">
 
-       <TextView
-           android:layout_width="match_parent"
-           android:layout_height="match_parent"
-           android:text=" Test fragment 2" />
-
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/listViewConnected" />
     </RelativeLayout>
 
 </FrameLayout>
