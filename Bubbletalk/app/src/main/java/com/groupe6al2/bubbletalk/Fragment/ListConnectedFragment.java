@@ -31,6 +31,8 @@ import com.groupe6al2.bubbletalk.R;
 
 
 public class ListConnectedFragment extends Fragment {
+
+
     FirebaseUser user;
     FirebaseAuth auth;
     DatabaseReference myRef;
@@ -47,6 +49,7 @@ public class ListConnectedFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         final View rootView= inflater.inflate(R.layout.fragment_chat, container, false);
 
         auth = FirebaseAuth.getInstance();
@@ -73,27 +76,6 @@ public class ListConnectedFragment extends Fragment {
         Intent myIntent = getActivity().getIntent();
         idBubble = myIntent.getStringExtra("id");
 
-
-        myRef =  database.getReference("chat").child(idBubble);
-
-        // Setup our input methods. Enter key on the keyboard or pushing the send button
-        EditText inputText = (EditText) rootView.findViewById(R.id.messageInput);
-        inputText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-                if (actionId == EditorInfo.IME_NULL && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
-                    sendMessage(rootView);
-                }
-                return true;
-            }
-        });
-
-        rootView.findViewById(R.id.sendButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sendMessage(rootView);
-            }
-        });
         return rootView;
 
     }
@@ -104,94 +86,12 @@ public class ListConnectedFragment extends Fragment {
 
 
     }
-/*
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
 
-        auth = FirebaseAuth.getInstance();
-        user= auth.getCurrentUser();
-        currentUser = bubbleTalkSQLite.getUser(user.getUid());
-        if(currentUser.getUsePseudo()==true) {
-            mUsername = currentUser.getPseudo();
-        }else{
-            mUsername = currentUser.getName();
-        }
-
-        Intent myIntent = getIntent();
-        idBubble = myIntent.getStringExtra("id");
-
-        setTitle("Chatting as " + mUsername);
-        myRef =  database.getReference("chat").child(idBubble);
-
-        // Setup our input methods. Enter key on the keyboard or pushing the send button
-        EditText inputText = (EditText) findViewById(R.id.messageInput);
-        inputText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-                if (actionId == EditorInfo.IME_NULL && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
-                    sendMessage();
-                }
-                return true;
-            }
-        });
-
-        findViewById(R.id.sendButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sendMessage();
-            }
-        });
-    }
-*/
 
     @Override
     public void onStart() {
         super.onStart();
 
-        // Setup our view and list adapter. Ensure it scrolls to the bottom as data changes
-        final ListView listView = (ListView) getActivity().findViewById(R.id.listChat);
-        // Tell our list adapter that we only want 50 messages at a time
-        mChatListAdapter = new ChatListAdapter(myRef.limitToLast(50), getActivity(), R.layout.chat_message, mUsername);
-        listView.setAdapter(mChatListAdapter);
-        mChatListAdapter.registerDataSetObserver(new DataSetObserver() {
-            @Override
-            public void onChanged() {
-                super.onChanged();
-                listView.setSelection(mChatListAdapter.getCount() - 1);
-            }
-        });
-
-        // Finally, a little indication of connection status
-        mConnectedListener = myRef.getRoot().child(".info/connected").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                boolean connected = (Boolean) dataSnapshot.getValue();
-                if (connected) {
-                    //Toast.makeText(ChatActivity.this, "Connected to Firebase", Toast.LENGTH_SHORT).show();
-                } else {
-                    //Toast.makeText(ChatActivity.this, "Disconnected from Firebase", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void sendMessage(View view) {
-        EditText inputText = (EditText) view.findViewById(R.id.messageInput);
-        String input = inputText.getText().toString();
-        if (!input.equals("")) {
-            // Create our 'model', a Chat object
-            Chat chat = new Chat(input, mUsername);
-            // Create a new, auto-generated child of that chat location, and save our chat data there
-            myRef.push().setValue(chat);
-            inputText.setText("");
-        }
     }
 
 }

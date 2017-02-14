@@ -2,20 +2,10 @@ package com.groupe6al2.bubbletalk.Activity;
 
 
 import android.content.Intent;
-import android.database.DataSetObserver;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.KeyEvent;
-import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -25,10 +15,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.groupe6al2.bubbletalk.Class.BubbleTalkSQLite;
-import com.groupe6al2.bubbletalk.Class.Chat;
 import com.groupe6al2.bubbletalk.Class.ChatListAdapter;
 import com.groupe6al2.bubbletalk.Class.User;
 import com.groupe6al2.bubbletalk.Fragment.ChatFragment;
+import com.groupe6al2.bubbletalk.Fragment.ListConnectedFragment;
 import com.groupe6al2.bubbletalk.R;
 
 public class ChatActivity extends AppCompatActivity {
@@ -68,12 +58,15 @@ public class ChatActivity extends AppCompatActivity {
 
 
         ChatFragment chatFragment = new ChatFragment();
+        ListConnectedFragment listConnectedFragment = new ListConnectedFragment();
 
-        int fragmentManager = getFragmentManager()
-                .beginTransaction()
-                .add(R.id.fragment_container, chatFragment)
-                .commit()
-                ;
+        FragmentTransaction fragmentManager = getSupportFragmentManager().beginTransaction();
+        fragmentManager.add(R.id.fragment_container, chatFragment);
+        fragmentManager.add(R.id.fragment_container, listConnectedFragment);
+
+        fragmentManager.commit();
+
+
 
     }
 

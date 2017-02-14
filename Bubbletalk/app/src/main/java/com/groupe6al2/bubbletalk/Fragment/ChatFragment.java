@@ -1,12 +1,10 @@
 package com.groupe6al2.bubbletalk.Fragment;
 
-import android.app.Fragment;
-import android.content.Context;
 import android.content.Intent;
 import android.database.DataSetObserver;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +13,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -29,10 +26,10 @@ import com.groupe6al2.bubbletalk.Class.Chat;
 import com.groupe6al2.bubbletalk.Class.ChatListAdapter;
 import com.groupe6al2.bubbletalk.Class.User;
 import com.groupe6al2.bubbletalk.R;
-import com.groupe6al2.bubbletalk.Widget.BubbleOnOff;
 
 
 public class ChatFragment extends Fragment {
+
     FirebaseUser user;
     FirebaseAuth auth;
     DatabaseReference myRef;
@@ -49,6 +46,7 @@ public class ChatFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         final View rootView= inflater.inflate(R.layout.fragment_chat, container, false);
 
         auth = FirebaseAuth.getInstance();

@@ -4,10 +4,18 @@
     android:layout_height="match_parent"
     tools:context="com.groupe6al2.bubbletalk.Fragment.ListConnectedFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+
+        tools:context=".Activity.ChatActivity">
+
+       <TextView
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           android:text=" Test fragment 2" />
+
+    </RelativeLayout>
 
 </FrameLayout>
