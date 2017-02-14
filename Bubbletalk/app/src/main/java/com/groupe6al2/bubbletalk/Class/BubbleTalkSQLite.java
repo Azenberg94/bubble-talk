@@ -93,6 +93,7 @@ public class BubbleTalkSQLite extends SQLiteOpenHelper {
 
     public User getUser(String id){
         User myUser = new User();
+
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM "+TABLE_USERS +" WHERE idUser = '"+id+"'",null);
         ArrayList<User> userList = new ArrayList<User>();
