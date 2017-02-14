@@ -103,7 +103,7 @@ public class CreateBubbleActivity extends AppCompatActivity {
             Bitmap bitmap = BitmapFactory.decodeByteArray(avatarBubbleDisplay,0,avatarBubbleDisplay.length);
             imageView.setImageBitmap(null);
             imageView.setImageBitmap(bitmap);
-            bitmap.recycle();
+
         }
 
 
@@ -150,7 +150,7 @@ public class CreateBubbleActivity extends AppCompatActivity {
                 avatarBubbleDisplay = stream.toByteArray();
 
                 imageView.setImageBitmap(bitmap);
-                bitmap.recycle();
+
             }
         }
     }

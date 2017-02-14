@@ -28,10 +28,13 @@ import android.widget.Toast;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -60,14 +63,20 @@ public class MyBubbleActivity extends AppCompatActivity {
     SharedPreferences shre;
     Bubble bubble;
     Button buttonActivate;
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
     String action = "";
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReferenceFromUrl("gs://bubbletalk-967fa.appspot.com");
+    FirebaseAuth auth;
+    FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_bubble);
+
+        auth = FirebaseAuth.getInstance();
+        user= auth.getCurrentUser();
 
         bubbleTalkSQLite = new BubbleTalkSQLite(this);
 
@@ -143,12 +152,11 @@ public class MyBubbleActivity extends AppCompatActivity {
         buttonActivate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (buttonActivate.getText().equals("Stopper la bubble")) {
+                if (buttonActivate.getText().equals("Stopper la bubble"))
+                {
                     buttonActivate.setText("Démarrer la bubble");
-                    action = "stop";
                 } else {
                     buttonActivate.setText("Stopper la bubble");
-                    action = "go";
                 }
                 activateBubble();
             }
@@ -163,7 +171,7 @@ public class MyBubbleActivity extends AppCompatActivity {
             }
         });
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+
         final DatabaseReference myRef = database.getReference("bubble").child(idBubble);
         //to initialize my button
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -192,7 +200,6 @@ public class MyBubbleActivity extends AppCompatActivity {
         LocationManager mlocManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
         if (mlocManager != null) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                System.out.println("test");
                 return;
             }
             location = mlocManager
@@ -204,7 +211,8 @@ public class MyBubbleActivity extends AppCompatActivity {
         }
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference myRef = database.getReference("bubble");
+        final DatabaseReference myRef = database.getReference("bubble").child(idBubble);
+        
         final double finalLongitude = longitude;
         final double finalLatitude = latitude;
         final boolean[] activate = {true};
