@@ -1,11 +1,16 @@
 package com.groupe6al2.bubbletalk.Activity;
 
+import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.database.DataSetObserver;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -25,7 +30,7 @@ import com.groupe6al2.bubbletalk.Class.ChatListAdapter;
 import com.groupe6al2.bubbletalk.Class.User;
 import com.groupe6al2.bubbletalk.R;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends Fragment {
 
     FirebaseUser user;
     FirebaseAuth auth;
@@ -38,8 +43,53 @@ public class ChatActivity extends AppCompatActivity {
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     private ValueEventListener mConnectedListener;
     private ChatListAdapter mChatListAdapter;
-    BubbleTalkSQLite bubbleTalkSQLite= new BubbleTalkSQLite(this);
+    BubbleTalkSQLite bubbleTalkSQLite= new BubbleTalkSQLite(getActivity());
 
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.activity_chat, container, false);
+    }
+
+    @Override
+    public void onViewCreated(final View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        auth = FirebaseAuth.getInstance();
+        user= auth.getCurrentUser();
+        currentUser = bubbleTalkSQLite.getUser(user.getUid());
+        if(currentUser.getUsePseudo()==true) {
+            mUsername = currentUser.getPseudo();
+        }else{
+            mUsername = currentUser.getName();
+        }
+
+        Intent myIntent = getActivity().getIntent();
+        idBubble = myIntent.getStringExtra("id");
+
+        getActivity().setTitle("Chatting as " + mUsername);
+        myRef =  database.getReference("chat").child(idBubble);
+
+        // Setup our input methods. Enter key on the keyboard or pushing the send button
+        EditText inputText = (EditText) view.findViewById(R.id.messageInput);
+        inputText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                if (actionId == EditorInfo.IME_NULL && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
+                    sendMessage(view);
+                }
+                return true;
+            }
+        });
+
+        view.findViewById(R.id.sendButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendMessage(view);
+            }
+        });
+    }
+/*
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,15 +129,16 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
     }
-
+*/
 
     @Override
     public void onStart() {
         super.onStart();
+
         // Setup our view and list adapter. Ensure it scrolls to the bottom as data changes
-        final ListView listView = (ListView)findViewById(R.id.listChat);
+        final ListView listView = (ListView) getActivity().findViewById(R.id.listChat);
         // Tell our list adapter that we only want 50 messages at a time
-        mChatListAdapter = new ChatListAdapter(myRef.limitToLast(50), this, R.layout.chat_message, mUsername);
+        mChatListAdapter = new ChatListAdapter(myRef.limitToLast(50), getActivity(), R.layout.chat_message, mUsername);
         listView.setAdapter(mChatListAdapter);
         mChatListAdapter.registerDataSetObserver(new DataSetObserver() {
             @Override
@@ -103,9 +154,9 @@ public class ChatActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 boolean connected = (Boolean) dataSnapshot.getValue();
                 if (connected) {
-                    Toast.makeText(ChatActivity.this, "Connected to Firebase", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(ChatActivity.this, "Connected to Firebase", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(ChatActivity.this, "Disconnected from Firebase", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(ChatActivity.this, "Disconnected from Firebase", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -116,8 +167,8 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-    private void sendMessage() {
-        EditText inputText = (EditText) findViewById(R.id.messageInput);
+    private void sendMessage(View view) {
+        EditText inputText = (EditText) view.findViewById(R.id.messageInput);
         String input = inputText.getText().toString();
         if (!input.equals("")) {
             // Create our 'model', a Chat object
