@@ -217,7 +217,7 @@ public class MyBubbleActivity extends AppCompatActivity {
         
         final double finalLongitude = longitude;
         final double finalLatitude = latitude;
-        final boolean[] activate = {true};
+
 
 
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -228,7 +228,6 @@ public class MyBubbleActivity extends AppCompatActivity {
                     intent.putExtra("State", false);
                     intent.putExtra("BubbleID", bubble.getId());
                     myRef.child("etat").setValue("false");
-                    activate[0] = false;
                 }else{
                     intent.putExtra("State", true);
                     Log.i(bubble.getId(), "----------------------------------------------------------------------------1");
