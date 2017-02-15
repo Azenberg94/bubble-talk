@@ -3,6 +3,7 @@ package com.groupe6al2.bubbletalk.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -56,8 +57,8 @@ public class LoginActivity  extends BaseActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         setContentView(R.layout.activity_login);
-
         /*BubbleTalkSQLite bubbleTalkSQLite = new BubbleTalkSQLite(this);
         bubbleTalkSQLite.deleteTable();*/
 

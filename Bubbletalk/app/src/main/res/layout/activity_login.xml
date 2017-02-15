@@ -12,9 +12,12 @@
         android:layout_weight="2.65"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:weightSum="1"
-		android:background="@drawable/ic_smartphone">
-
+        android:weightSum="1">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:ignore="MissingPrefix"
+            android:src="@drawable/ic_smartphone"/>
 
     </LinearLayout>
 

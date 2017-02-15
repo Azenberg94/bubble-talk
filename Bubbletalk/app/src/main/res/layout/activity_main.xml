@@ -11,6 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_chatting"
+        tools:ignore="MissingPrefix"
         android:scaleType="centerCrop" />
     <include
         layout="@layout/app_bar_main"
